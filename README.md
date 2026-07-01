@@ -21,7 +21,7 @@ Permite a las navieras enviar documentación al Sector Pacífico, que valida y p
 ### Requisitos
 - Python 3.12+
 - Node.js 22+
-- PostgreSQL con base `migradrop` creada
+- PostgreSQL con base `filetransfer` creada (o coincidí el nombre con lo que tengas en `DATABASE_URL`)
 - Acceso a un servidor LDAP / Active Directory
 
 ### Primera vez
@@ -66,7 +66,7 @@ start-backend-prod.bat
 ## Estructura
 
 ```
-migradrop/
+FileTransfer/
 ├─ backend/
 │  ├─ app/
 │  │  ├─ main.py                # arranque FastAPI + lifespan + CORS + rutas
