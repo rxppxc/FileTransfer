@@ -1,0 +1,22 @@
+import { clienteApi } from "./client";
+import type { RespuestaToken, Usuario } from "../types";
+
+export const apiAutenticacion = {
+  iniciarSesion: (nombreUsuario: string, contrasena: string) =>
+    clienteApi.post<RespuestaToken>("/auth/login", { username: nombreUsuario, password: contrasena }).then((r) => r.data),
+
+  refrescarSesion: () =>
+    clienteApi.post<RespuestaToken>("/auth/refresh").then((r) => r.data),
+
+  cerrarSesion: () =>
+    clienteApi.post("/auth/logout").catch(() => {}),
+
+  notificarExpiracion: () =>
+    clienteApi.post("/auth/session-expired").catch(() => {}),
+
+  perfilActual: () =>
+    clienteApi.get<Usuario>("/auth/me").then((r) => r.data),
+
+  misPermisos: () =>
+    clienteApi.get<string[]>("/auth/me/permisos").then((r) => r.data),
+};

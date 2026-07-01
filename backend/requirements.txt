@@ -1,0 +1,41 @@
+# ════════════════════════════════════════════════════════════════════════════
+# FileTransfer SNM — Dependencias del backend
+# Versiones fijas (==) para reproducibilidad. Actualizar con revisión manual.
+# Regenerar con: pip freeze > requirements.txt (revisando previamente)
+# ════════════════════════════════════════════════════════════════════════════
+
+# ── Núcleo web ──────────────────────────────────────────────────────────────
+fastapi==0.138.0
+uvicorn[standard]==0.49.0
+starlette==1.3.1
+python-multipart==0.0.32
+
+# ── Base de datos ───────────────────────────────────────────────────────────
+sqlalchemy==2.0.51
+alembic==1.18.4
+asyncpg==0.31.0
+psycopg[binary]==3.3.4
+
+# ── Configuración y modelos ─────────────────────────────────────────────────
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-dotenv==1.2.2
+
+# ── Seguridad / Auth ────────────────────────────────────────────────────────
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==5.0.0
+ldap3==2.9.1
+
+# ── Rate limiting (protección contra DDoS en endpoints públicos) ────────────
+slowapi==0.1.10
+
+# ── Validación de tipo de archivo real (anti spoofing de MIME) ──────────────
+# En Windows usamos python-magic-bin (incluye binarios). En Linux: python-magic + libmagic.
+python-magic-bin==0.4.14; sys_platform == "win32"
+python-magic==0.4.27; sys_platform != "win32"
+
+# ── Otros ───────────────────────────────────────────────────────────────────
+aiofiles==25.1.0
+aiosmtplib==5.1.2
+httpx==0.28.1

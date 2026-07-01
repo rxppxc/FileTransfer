@@ -1,0 +1,74 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  animation: fadeIn .12s ease-out;
+}
+
+.modal {
+  background: var(--surface, #1f2433);
+  color: var(--text, #f4f5f8);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  padding: 22px 24px;
+  width: min(420px, 92vw);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .35);
+  animation: zoomIn .14s ease-out;
+}
+
+.titulo {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.mensaje {
+  font-size: .92rem;
+  color: var(--text-2, rgba(244, 245, 248, .85));
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btnCancelar,
+.btnConfirmar,
+.btnPeligro {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: filter .12s ease, transform .08s ease;
+}
+
+.btnCancelar {
+  background: transparent;
+  border-color: rgba(255, 255, 255, .15);
+  color: var(--text, #f4f5f8);
+}
+.btnCancelar:hover { background: rgba(255, 255, 255, .06); }
+
+.btnConfirmar {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+}
+.btnConfirmar:hover { filter: brightness(1.08); }
+
+.btnPeligro {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+}
+.btnPeligro:hover { filter: brightness(1.08); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }

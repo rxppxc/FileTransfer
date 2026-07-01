@@ -1,0 +1,24 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  color: #0F0F0F;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 6px 13px 6px 9px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid #F5C800;
+  background: #F5C800;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.btn:hover {
+  background: #FFD600;
+  border-color: #FFD600;
+  box-shadow: 0 4px 14px rgba(245,200,0,.35);
+}

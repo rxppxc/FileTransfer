@@ -1,0 +1,75 @@
+"""Dependencia FastAPI para validar permisos del usuario actual.
+
+La fuente de verdad es `rol_personalizado` (rol_id en la tabla users).
+Un usuario es administrador efectivo únicamente si su rol_personalizado
+tiene nombre == 'Administrador'. Sin rol_personalizado asignado, el
+usuario no tiene acceso administrativo.
+"""
+from fastapi import Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.infrastructure.database import obtener_sesion_bd
+from app.core.security import obtener_id_usuario_actual
+from app.domain.models.user import Usuario
+from app.domain.models.rol import Permiso, RolPermiso
+
+
+def es_admin_efectivo(usuario: Usuario) -> bool:
+    """True si el usuario tiene el rol personalizado 'Administrador'."""
+    return (
+        usuario.rol_personalizado is not None
+        and usuario.rol_personalizado.nombre == "Administrador"
+    )
+
+
+async def usuario_tiene_permiso(
+    sesion: AsyncSession,
+    user_id: int,
+    codigo_permiso: str,
+) -> bool:
+    """True si el usuario es admin efectivo o su rol tiene el permiso."""
+    usuario = (await sesion.execute(select(Usuario).where(Usuario.id == user_id))).scalar_one_or_none()
+    if not usuario:
+        return False
+    if es_admin_efectivo(usuario):
+        return True
+    if usuario.rol_id is None:
+        return False
+    existe = await sesion.execute(
+        select(Permiso.id)
+        .join(RolPermiso, RolPermiso.permiso_id == Permiso.id)
+        .where(RolPermiso.rol_id == usuario.rol_id, Permiso.codigo == codigo_permiso)
+        .limit(1)
+    )
+    return existe.scalar_one_or_none() is not None
+
+
+def requerir_permiso(codigo_permiso: str):
+    """Genera una dependencia FastAPI que valida que el usuario tenga el permiso."""
+    async def _dep(
+        user_id: int = Depends(obtener_id_usuario_actual),
+        sesion: AsyncSession = Depends(obtener_sesion_bd),
+    ) -> int:
+        if not await usuario_tiene_permiso(sesion, user_id, codigo_permiso):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"No tienes el permiso requerido: {codigo_permiso}.",
+            )
+        return user_id
+    return _dep
+
+
+def requerir_algun_permiso(*codigos: str):
+    """Dependencia que requiere al menos uno de los permisos listados."""
+    async def _dep(
+        user_id: int = Depends(obtener_id_usuario_actual),
+        sesion: AsyncSession = Depends(obtener_sesion_bd),
+    ) -> int:
+        for codigo in codigos:
+            if await usuario_tiene_permiso(sesion, user_id, codigo):
+                return user_id
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"No tienes ninguno de los permisos requeridos: {', '.join(codigos)}.",
+        )
+    return _dep

@@ -1,0 +1,89 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  background: #1a1d23;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.icono {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.titulo {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+
+.texto {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.cuenta {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: #f5c518;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btnContinuar {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f5c518;
+  color: #0a0c10;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnContinuar:hover {
+  opacity: 0.88;
+}
+
+.btnSalir {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.btnSalir:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}

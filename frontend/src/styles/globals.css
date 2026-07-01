@@ -1,0 +1,99 @@
+:root {
+  --y:         #F5C800;
+  --y-dark:    #C9A400;
+  --y-soft:    rgba(245,200,0,.12);
+  --y-border:  rgba(245,200,0,.25);
+  --ink:       #0F0F0F;
+  --ink-2:     #1C1C1C;
+  --ink-3:     #2D2D2D;
+  --bg:        #111421;
+  --surface:   #1C1F36;
+  --surface-2: #23263E;
+  --border:    rgba(255,255,255,.11);
+  --border-2:  rgba(255,255,255,.19);
+  --text:      #E4E6F0;
+  --text-2:    #9A9DC0;
+  --muted:     #6B6E85;
+  --quiet:     #4D506A;
+  --green:     #22C55E;
+  --green-soft:rgba(34,197,94,.13);
+  --red:       #EF4444;
+  --red-soft:  rgba(239,68,68,.13);
+
+  --r-xs: 5px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  --sh-xs: 0 1px 4px rgba(0,0,0,.40);
+  --sh-sm: 0 2px 8px rgba(0,0,0,.45);
+  --sh-md: 0 8px 24px rgba(0,0,0,.55);
+  --sh-lg: 0 24px 64px rgba(0,0,0,.65);
+
+  --ease: cubic-bezier(.4,0,.2,1);
+  --t:    .18s;
+}
+
+/* ─── Modo claro ─── */
+[data-theme="light"] {
+  --bg:        #E6EAF8;
+  --surface:   #FFFFFF;
+  --surface-2: #F1F4FF;
+  --border:    rgba(0,0,0,.09);
+  --border-2:  rgba(0,0,0,.17);
+  --text:      #1A1C2E;
+  --text-2:    #3D4070;
+  --muted:     #6A6E9E;
+  --quiet:     #9698C0;
+  --ink:       #1A2040;
+  --ink-2:     #222A52;
+  --ink-3:     #2E3762;
+  --sh-xs: 0 1px 4px rgba(0,0,0,.08);
+  --sh-sm: 0 2px 8px rgba(0,0,0,.10);
+  --sh-md: 0 8px 24px rgba(0,0,0,.12);
+  --sh-lg: 0 24px 64px rgba(0,0,0,.18);
+}
+
+[data-theme="light"] body::before {
+  background: rgba(228, 234, 252, 0.93);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; height: 100%; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: #0D1018;
+  background-image: url('/images/bg-migracion.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 18, 0.84);
+  z-index: 0;
+  pointer-events: none;
+}
+
+#root { position: relative; z-index: 1; }
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+input, textarea, select { font-family: inherit; }
+img { display: block; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
