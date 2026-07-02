@@ -80,7 +80,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(5, 7, 18, 0.84);
+  background: linear-gradient(150deg, rgba(26,32,64,.92) 0%, rgba(13,17,40,.94) 100%);
   z-index: 0;
   pointer-events: none;
 }

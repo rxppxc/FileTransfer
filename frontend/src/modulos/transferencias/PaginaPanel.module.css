@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   background-image:
-    linear-gradient(rgba(5,7,18,0.84), rgba(5,7,18,0.84)),
+    linear-gradient(150deg, rgba(26,32,64,.92) 0%, rgba(13,17,40,.94) 100%),
     url('/images/bg-migracion.jpg');
   background-size: cover;
   background-position: center;
@@ -677,11 +677,11 @@
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  background: rgba(255,255,255,.08);
+  background: var(--quiet);
   border-radius: 999px;
   font-size: .74rem;
   font-weight: 800;
-  color: var(--muted);
+  color: var(--text);
 }
 
 .expiredChevron {
@@ -752,8 +752,8 @@
   padding: 2px 9px;
 }
 .badgeExpired {
-  background: rgba(255,255,255,.07);
-  color: var(--muted);
+  background: var(--quiet);
+  color: var(--text);
   border-radius: 20px;
   font-size: .70rem;
   font-weight: 700;
@@ -1150,10 +1150,6 @@
   background: rgba(239,68,68,.13);
   border-color: rgba(239,68,68,.50);
   color: #B91C1C;
-}
-/* Badge expirado en modo claro */
-:global([data-theme="light"]) .badgeExpired {
-  background: rgba(0,0,0,.07);
 }
 /* Footer: fondo oscuro sólido en modo claro */
 :global([data-theme="light"]) .footer {

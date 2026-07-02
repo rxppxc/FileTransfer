@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import type * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAutenticacion } from "../../hooks/useAutenticacion";
+import { IconoUsuario, IconoCandado, IconoOjo, IconoOjoCerrado, IconoAlerta } from "../../components/Iconos";
+import styles from "./PaginaLogin.module.css";
 
 const FONDOS = [
   '/images/bg-migracion.jpg',
@@ -10,14 +14,9 @@ const FONDOS = [
   '/images/login-bg-6.jpg',
   '/images/login-bg-7.png',
 ];
-import { useNavigate } from "react-router-dom";
-import { useAutenticacion } from "../../hooks/useAutenticacion";
-import { IconoUsuario, IconoCandado, IconoOjo, IconoOjoCerrado, IconoAlerta } from "../../components/Iconos";
-import styles from "./PaginaLogin.module.css";
-
 
 const CARACTERISTICAS = [
-  "Autenticación con Active Directory",
+  "Autenticación con el dominio",
   "Transferencias cifradas",
   "Enlace único por transferencia",
   "Expiración automática",
@@ -57,118 +56,118 @@ export default function PaginaLogin() {
   return (
     <div className={styles.page}>
 
-      {/* Slideshow de fondo */}
-      <div className={styles.slideshowBg}>
-        {FONDOS.map((src, i) => (
-          <div
-            key={src}
-            className={`${styles.bgSlide} ${i === fondoActual ? styles.bgSlideActive : ""}`}
-            style={{ backgroundImage: `url(${src})` }}
-          />
-        ))}
-        <div className={styles.bgOverlay} />
-      </div>
-
-      <div className={styles.center}>
-
-        {/* Marca */}
+      {/* Panel de acceso */}
+      <div className={styles.panelForm}>
         <div className={styles.brand}>
+          <img src="/images/logo-snm.png" alt="SNM" className={styles.brandLogo} />
           <div className={styles.brandText}>
             <div className={styles.org}>Servicio Nacional de Migración</div>
-            <div className={styles.app}>FileTransfer - SNM</div>
+            <div className={styles.app}>FileTransfer SNM</div>
           </div>
         </div>
 
-        {/* Escudo */}
-        <div className={styles.shieldOuter}>
-          <div className={styles.avatarRing}>
-            <img src="/images/logo-snm.png" alt="SNM" className={styles.avatarLogo} />
-          </div>
+        <div className={styles.formWrap}>
+          <h1 className={styles.titulo}>Bienvenido</h1>
+          <p className={styles.subtitulo}>Ingresa con tus credenciales de dominio</p>
 
-          <div className={styles.shield}>
-            <div className={styles.shieldContent}>
-              <h1 className={styles.titulo}>Bienvenido</h1>
-              <p className={styles.subtitulo}>Ingresa con tus credenciales de dominio</p>
+          {error && (
+            <div className={styles.error}>
+              <IconoAlerta />
+              {error}
+            </div>
+          )}
 
-              {error && (
-                <div className={styles.error}>
-                  <IconoAlerta />
-                  {error}
-                </div>
-              )}
+          <form onSubmit={alEnviar} noValidate>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="nombreUsuario">Nombre de Usuario</label>
+              <div className={styles.inputLine}>
+                <span className={styles.inputIcon}><IconoUsuario tamano={17} /></span>
+                <input
+                  id="nombreUsuario"
+                  className={styles.input}
+                  type="text"
+                  placeholder="Ej: vperez"
+                  value={nombreUsuario}
+                  onChange={(e) => setNombreUsuario(e.target.value)}
+                  autoComplete="username"
+                  required
+                  autoFocus
+                />
+              </div>
+            </div>
 
-              <form onSubmit={alEnviar} noValidate>
-                <div className={styles.field}>
-                  <div className={styles.inputWrap}>
-                    <span className={styles.inputIcon}><IconoUsuario tamano={17} /></span>
-                    <input
-                      id="nombreUsuario"
-                      className={styles.input}
-                      type="text"
-                      placeholder="Usuario de dominio"
-                      value={nombreUsuario}
-                      onChange={(e) => setNombreUsuario(e.target.value)}
-                      autoComplete="username"
-                      required
-                      autoFocus
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.field}>
-                  <div className={styles.inputWrap}>
-                    <span className={styles.inputIcon}><IconoCandado /></span>
-                    <input
-                      id="contrasena"
-                      className={styles.input}
-                      type={mostrarContrasena ? "text" : "password"}
-                      placeholder="Contraseña de dominio"
-                      value={contrasena}
-                      onChange={(e) => setContrasena(e.target.value)}
-                      autoComplete="current-password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      className={styles.eyeBtn}
-                      onClick={() => setMostrarContrasena((v) => !v)}
-                      aria-label="Mostrar contraseña"
-                    >
-                      {mostrarContrasena ? <IconoOjoCerrado /> : <IconoOjo tamano={16} />}
-                    </button>
-                  </div>
-                </div>
-
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="contrasena">Clave de Acceso</label>
+              <div className={styles.inputLine}>
+                <span className={styles.inputIcon}><IconoCandado /></span>
+                <input
+                  id="contrasena"
+                  className={styles.input}
+                  type={mostrarContrasena ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
                 <button
-                  type="submit"
-                  className={styles.submitBtn}
-                  disabled={cargando || !nombreUsuario || !contrasena}
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setMostrarContrasena((v) => !v)}
+                  aria-label="Mostrar contraseña"
                 >
-                  {cargando && <span className={styles.spinner} />}
-                  {cargando ? "Verificando…" : "Iniciar sesión"}
+                  {mostrarContrasena ? <IconoOjoCerrado /> : <IconoOjo tamano={16} />}
                 </button>
-              </form>
-
-              <p className={styles.hint}>¿Problemas para acceder? Contacta a la Dirección de Tecnología e Innovación.</p>
+              </div>
             </div>
-          </div>
+
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={cargando || !nombreUsuario || !contrasena}
+            >
+              {cargando && <span className={styles.spinner} />}
+              {cargando ? "Verificando…" : "Conectar"}
+            </button>
+          </form>
+
+          <p className={styles.hint}>¿Tienes Problemas para acceder? Contacta a la Dirección de Tecnología e Innovación.</p>
         </div>
 
-        {/* Características */}
-        <div className={styles.feats}>
-          {CARACTERISTICAS.map((c) => (
-            <div key={c} className={styles.feat}>
-              <span className={styles.featDot} />
-              {c}
-            </div>
-          ))}
+        <div className={styles.formFooter}>
+          Servicio Nacional de Migración &copy; {new Date().getFullYear()} &mdash; Todos los derechos reservados
         </div>
-
       </div>
 
-      <footer className={styles.footer}>
-        Servicio Nacional de Migración &copy; {new Date().getFullYear()} &mdash; Todos los derechos reservados
-      </footer>
+      {/* Panel visual */}
+      <div className={styles.panelVisual}>
+        <div className={styles.slideshowBg}>
+          {FONDOS.map((src, i) => (
+            <div
+              key={src}
+              className={`${styles.bgSlide} ${i === fondoActual ? styles.bgSlideActive : ""}`}
+              style={{ backgroundImage: `url(${src})` }}
+            />
+          ))}
+          <div className={styles.bgOverlay} />
+        </div>
+
+        <div className={styles.visualContent}>
+          <img src="/images/logo-snm.png" alt="SNM" className={styles.visualLogo} />
+          <h2 className={styles.visualTitulo}>FileTransfer SNM</h2>
+          <p className={styles.visualSubtitulo}>Repositorio de Transferencia Documental  </p>
+
+          <div className={styles.feats}>
+            {CARACTERISTICAS.map((c) => (
+              <div key={c} className={styles.feat}>
+                <span className={styles.featDot} />
+                {c}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

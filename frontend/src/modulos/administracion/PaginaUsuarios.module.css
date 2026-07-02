@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   background-image:
-    linear-gradient(rgba(5,7,18,0.84), rgba(5,7,18,0.84)),
+    linear-gradient(150deg, rgba(26,32,64,.92) 0%, rgba(13,17,40,.94) 100%),
     url('/images/bg-migracion.jpg');
   background-size: cover;
   background-position: center;
