@@ -1,4 +1,4 @@
-# FileTransfer SNM
+# FileTransfer - SNM
 
 Sistema interno de transferencia de archivos del **Servicio Nacional de Migración (SNM) de Panamá**.
 
