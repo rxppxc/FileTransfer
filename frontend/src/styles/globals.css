@@ -9,6 +9,9 @@
   --bg:        #111421;
   --surface:   #1C1F36;
   --surface-2: #23263E;
+  /* Tarjetas a nivel de página (más oscuras que --surface, que es nivel modal). */
+  --card:      #0E1020;
+  --card-2:    #141830;
   --border:    rgba(255,255,255,.11);
   --border-2:  rgba(255,255,255,.19);
   --text:      #E4E6F0;
@@ -19,6 +22,27 @@
   --green-soft:rgba(34,197,94,.13);
   --red:       #EF4444;
   --red-soft:  rgba(239,68,68,.13);
+
+  /* Tokens que se voltean con el tema — usar SIEMPRE estos en vez de
+     rgba(255,255,255,...) hardcodeado, para que el modo claro funcione solo. */
+  --hover:        rgba(255,255,255,.06);  /* relleno sutil en :hover */
+  --overlay:      rgba(255,255,255,.08);  /* chips, badges, pills, divisores suaves */
+  --overlay-2:    rgba(255,255,255,.12);  /* variante un poco más marcada */
+  --input-bg:     rgba(255,255,255,.06);  /* fondo de campos de formulario */
+  --input-border: rgba(255,255,255,.16);  /* borde de campos de formulario */
+  --on-accent:    #0F0F0F;                /* texto sobre el amarillo de marca */
+
+  /* Texto de acento sobre tintes suaves (badges, botones outline). Brillante en
+     oscuro; el modo claro los reemplaza por mid-tones legibles sobre blanco. */
+  --acc-green:  #4ADE80;
+  --acc-red:    #FCA5A5;
+  --acc-amber:  #FBB924;
+  --acc-blue:   #60A5FA;
+  --acc-gray:   #94A3B8;
+  --acc-purple: #C084FC;
+  --acc-gold:   #F5C800;
+  --acc-teal:   #2DD4BF;
+  --acc-orange: #FDBA74;
 
   --r-xs: 5px;
   --r-sm: 8px;
@@ -40,6 +64,8 @@
   --bg:        #E6EAF8;
   --surface:   #FFFFFF;
   --surface-2: #F1F4FF;
+  --card:      #FFFFFF;
+  --card-2:    #F4F6FD;
   --border:    rgba(0,0,0,.09);
   --border-2:  rgba(0,0,0,.17);
   --text:      #1A1C2E;
@@ -53,6 +79,24 @@
   --sh-sm: 0 2px 8px rgba(0,0,0,.10);
   --sh-md: 0 8px 24px rgba(0,0,0,.12);
   --sh-lg: 0 24px 64px rgba(0,0,0,.18);
+
+  /* Contrapartes claras de los tokens que se voltean */
+  --hover:        rgba(0,0,0,.05);
+  --overlay:      rgba(0,0,0,.05);
+  --overlay-2:    rgba(0,0,0,.08);
+  --input-bg:     #FFFFFF;
+  --input-border: rgba(0,0,0,.18);
+  --on-accent:    #0F0F0F;
+
+  --acc-green:  #15803D;
+  --acc-red:    #DC2626;
+  --acc-amber:  #B45309;
+  --acc-blue:   #2563EB;
+  --acc-gray:   #5B6178;
+  --acc-purple: #7E22CE;
+  --acc-gold:   #9A7B00;
+  --acc-teal:   #0F766E;
+  --acc-orange: #C2410C;
 }
 
 [data-theme="light"] body::before {

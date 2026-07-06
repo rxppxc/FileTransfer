@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: snm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: snm_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=FileTransfer - SNM
+      - APP_ENV=production
+      - SECRET_KEY=${SECRET_KEY}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - ALGORITHM=HS256
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}
+      - LDAP_HOST=${LDAP_HOST}
+      - LDAP_PORT=389
+      - LDAP_BASE_DN=${LDAP_BASE_DN}
+      - LDAP_BIND_USER=${LDAP_BIND_USER}
+      - LDAP_BIND_PASSWORD=${LDAP_BIND_PASSWORD}
+      - LDAP_TIMEOUT=10
+      - LDAP_ALLOWED_OU=
+      - STORAGE_PATH=/app/storage/transfers
+      - MAX_FILE_SIZE_MB=100
+      - TRANSFER_EXPIRY_DAYS=7
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=25
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_FROM_NAME=FileTransfer - SNM
+      - LIMPIEZA_INTERVALO_HORAS=6
+      - FRONTEND_URL=${APP_URL}
+      - APP_URL=${APP_URL}
+      - RATE_LIMIT_DOWNLOADS_PER_MINUTE=30
+    volumes:
+      - filetransfer_storage:/app/storage/transfers
+    depends_on:
+      - postgres_db
+
+  frontend:
+    build: ./frontend
+    container_name: snm_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  filetransfer_storage:

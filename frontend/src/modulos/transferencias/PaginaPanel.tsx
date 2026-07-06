@@ -24,6 +24,8 @@ import { useConfirmar } from "../../components/ModalConfirmacion";
 import { ModalDevolucion } from "../../components/ModalDevolucion";
 import { useNotificacion } from "../../components/Notificaciones";
 import { MenuCabecera } from "../../components/MenuCabecera";
+import FiltroFechas, { type RangoFechas } from "../../components/FiltroFechas";
+import FranjaKPI from "../../components/FranjaKPI";
 import {
   IconoMas, IconoCarpeta, IconoArchivo, IconoPeso, IconoDescargar,
   IconoReloj, IconoEnlace, IconoCheck, IconoBasura, IconoOjo,
@@ -130,7 +132,7 @@ function TransferCard({
                 )}
                 {t.status === "returned" && (
                   <Link to={`/transfers/${t.id}/corregir`} className={styles.btnCorregir}>
-                    Corregir →
+                    Corregir
                   </Link>
                 )}
                 {t.status === "active" && (
@@ -154,12 +156,12 @@ function TransferCard({
               <>
                 {(t.status === "draft" || t.status === "review") && (
                   <Link to={`/transfers/${t.id}/procesar`} className={styles.btnProcesar}>
-                    {t.status === "review" ? "Revisar de nuevo →" : "Procesar →"}
+                    {t.status === "review" ? "Revisar de nuevo" : "Abrir"}
                   </Link>
                 )}
                 {t.status === "returned" && (
                   <Link to={`/transfers/${t.id}/procesar`} className={styles.btnProcesar}>
-                    Revisar →
+                    Revisar
                   </Link>
                 )}
                 {t.status === "active" && (
@@ -174,7 +176,7 @@ function TransferCard({
                       {copiado === t.token ? <><IconoCheck tamano={13} />Copiado</> : <><IconoEnlace />Copiar enlace</>}
                     </button>
                     <Link to={`/transfers/${t.id}/procesar`} className={styles.btnProcesar}>
-                      Editar →
+                      Editar
                     </Link>
                   </>
                 )}
@@ -310,6 +312,7 @@ export default function PaginaPanel() {
   const [busqueda]                              = useState("");
   const [verTodaCola,      setVerTodaCola]      = useState(false);
   const [modalDevolverId, setModalDevolverId]   = useState<{ id: number; titulo: string | null } | null>(null);
+  const [rangoFecha,       setRangoFecha]       = useState<RangoFechas>({ desde: null, hasta: null });
 
   // ── Carga inicial de transferencias según rol ─────────────────────────────
   useEffect(() => {
@@ -410,8 +413,20 @@ export default function PaginaPanel() {
   }
 
   // ── Datos derivados ───────────────────────────────────────────────────────
-  const activas   = transferencias.filter((t) => !t.is_expired);
-  const expiradas = transferencias.filter((t) =>  t.is_expired);
+  // Filtro por fecha de creación (client-side). Las stats de arriba siguen
+  // reflejando el total global; el filtro solo afecta la lista/jerarquía.
+  const transferenciasFecha =
+    rangoFecha.desde === null && rangoFecha.hasta === null
+      ? transferencias
+      : transferencias.filter((t) => {
+          const f = (t.created_at || "").slice(0, 10); // YYYY-MM-DD
+          if (rangoFecha.desde && f < rangoFecha.desde) return false;
+          if (rangoFecha.hasta && f > rangoFecha.hasta) return false;
+          return true;
+        });
+
+  const activas   = transferenciasFecha.filter((t) => !t.is_expired);
+  const expiradas = transferenciasFecha.filter((t) =>  t.is_expired);
   const busquedaNorm = busqueda.toLowerCase().trim();
   const activasFiltradas = busquedaNorm
     ? activas.filter(t =>
@@ -445,6 +460,12 @@ export default function PaginaPanel() {
   const muelleSinPuertos =
     puedeOperarMuelle && !esAdmin && !cargando && transferencias.length === 0
     && (usuario?.puertos_asignados?.length ?? 0) === 0;
+
+  // Filtro por fecha: se muestra en vistas que suelen listar muchas (Admin,
+  // Muelle, Sector Pacífico). No filtra la cola de revisión (siempre pequeña).
+  const hayFiltroFecha     = rangoFecha.desde !== null || rangoFecha.hasta !== null;
+  const mostrarFiltroFecha = (vistaJerarquica || vistaColaSP) && transferencias.length > 0;
+  const sinResultadosFecha = hayFiltroFecha && activas.length === 0 && expiradas.length === 0;
 
   function cardBase(t: Transferencia, modo: Modo) {
     return {
@@ -502,29 +523,11 @@ export default function PaginaPanel() {
         )}
 
         {transferencias.length > 0 && (
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <div className={`${styles.statIcon} ${styles.yellow}`}><IconoGrafico /></div>
-              <div>
-                <div className={styles.statNum}>{estadisticas.total}</div>
-                <div className={styles.statLabel}>Transferencias totales</div>
-              </div>
-            </div>
-            <div className={styles.stat}>
-              <div className={`${styles.statIcon} ${styles.green}`}><IconoActividad /></div>
-              <div>
-                <div className={styles.statNum}>{estadisticas.activas}</div>
-                <div className={styles.statLabel}>Activas</div>
-              </div>
-            </div>
-            <div className={styles.stat}>
-              <div className={`${styles.statIcon} ${styles.blue}`}><IconoDescargar /></div>
-              <div>
-                <div className={styles.statNum}>{estadisticas.totalDescargas}</div>
-                <div className={styles.statLabel}>Descargas totales</div>
-              </div>
-            </div>
-          </div>
+          <FranjaKPI items={[
+            { icono: <IconoGrafico tamano={18} />, valor: estadisticas.total, etiqueta: "Transferencias totales", color: "gold" },
+            { icono: <IconoActividad tamano={18} />, valor: estadisticas.activas, etiqueta: "Activas", color: "green" },
+            { icono: <IconoDescargar tamano={18} />, valor: estadisticas.totalDescargas, etiqueta: "Descargas totales", color: "blue" },
+          ]} />
         )}
 
         {cargando ? (
@@ -558,6 +561,11 @@ export default function PaginaPanel() {
           </div>
         ) : (
           <>
+            {/* ── Filtro por fecha (Admin / Muelle / Sector Pacífico) ── */}
+            {mostrarFiltroFecha && (
+              <FiltroFechas valor={rangoFecha} onCambio={setRangoFecha} />
+            )}
+
             {/* ── Cola de revisión (Sector Pacífico + Admin) ── */}
             {vistaColaSP && cola.length > 0 && (
               <div className={styles.colaSection}>
@@ -602,17 +610,25 @@ export default function PaginaPanel() {
                           {t.message && t.status !== "review" && <div className={styles.colaItemMsg}>&ldquo;{t.message}&rdquo;</div>}
                         </div>
                         <Link to={`/transfers/${t.id}/procesar`} className={styles.btnProcesar}>
-                          {t.status === "review" ? "Revisar de nuevo →" : "Procesar →"}
+                          {t.status === "review" ? "Revisar de nuevo" : "Abrir"}
                         </Link>
                       </div>
                     ))}
                     {cola.length > 5 && (
                       <button className={styles.verTodosBtn} onClick={() => setVerTodaCola(v => !v)}>
-                        {verTodaCola ? "Mostrar menos ↑" : `Ver todos (${cola.length}) →`}
+                        {verTodaCola ? "Mostrar menos" : `Ver todos (${cola.length})`}
                       </button>
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {sinResultadosFecha && (
+              <div className={styles.empty}>
+                <div className={styles.emptyIllustration}><IconoReloj tamano={34} /></div>
+                <h3>Sin transferencias en el rango</h3>
+                <p>No hay transferencias creadas en las fechas seleccionadas. Ajusta o limpia el filtro de fecha.</p>
               </div>
             )}
 

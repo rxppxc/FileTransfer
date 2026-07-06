@@ -95,7 +95,7 @@
 
 .btnLogout {
   background: rgba(239,68,68,.12);
-  color: #FCA5A5;
+  color: var(--acc-red);
   border: 1.5px solid rgba(239,68,68,.40);
   border-radius: var(--r-sm);
   padding: 7px 14px;
@@ -167,7 +167,6 @@
 
 /* ─── Elevation above glows ─── */
 .topRow,
-.stats,
 .loadingWrap,
 .empty,
 .list { position: relative; z-index: 1; }
@@ -184,65 +183,55 @@
 .topRowRight { display: flex; justify-content: flex-end; }
 
 .pageTitle {
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -.3px;
   text-align: center;
+  animation: heroIn .5s var(--ease) both;
+}
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .pageTitle span {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--y);
-  margin-top: 5px;
-  letter-spacing: -.2px;
+  margin-top: 7px;
+  padding-bottom: 12px;
+  letter-spacing: .1px;
+  position: relative;
+}
+.pageTitle span::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 46px; height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--y-dark), var(--y));
+  box-shadow: 0 0 10px rgba(245,200,0,.45);
 }
 
 .btnNew {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: var(--y);
+  background: linear-gradient(135deg, #FFD84D 0%, var(--y) 55%, var(--y-dark) 100%);
   color: var(--ink);
   border-radius: var(--r-sm);
-  padding: 10px 22px;
+  padding: 11px 22px;
   font-weight: 700;
   font-size: .86rem;
   text-decoration: none;
   white-space: nowrap;
-  transition: background var(--t) var(--ease), transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
+  box-shadow: 0 2px 10px rgba(245,200,0,.22);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), filter var(--t) var(--ease);
 }
-.btnNew:hover { background: #FFD600; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,0,.30); }
-
-/* ─── Stats ─── */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 28px;
-}
-.stat {
-  background: #0E1020;
-  border: 1px solid #1E2240;
-  border-radius: var(--r-md);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: var(--sh-sm);
-}
-.statIcon {
-  width: 40px; height: 40px;
-  border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.statIcon.yellow { background: var(--y-soft); color: var(--y); }
-.statIcon.green  { background: var(--green-soft); color: var(--green); }
-.statIcon.blue   { background: rgba(96,165,250,.12); color: #60A5FA; }
-.statNum { font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; }
-.statLabel { font-size: .75rem; color: var(--text-2); margin-top: 3px; font-weight: 500; }
+.btnNew:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(245,200,0,.42); }
+.btnNew:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(245,200,0,.22); }
 
 /* ─── Loading ─── */
 .loadingWrap {
@@ -299,11 +288,11 @@
 .card:hover {
   box-shadow: var(--sh-md);
   border-left-color: var(--y);
-  background: #111328;
+  background: var(--surface-2);
 }
 .cardOpen {
   border-left-color: var(--y);
-  background: #111328;
+  background: var(--surface-2);
 }
 .cardExpired {
   border-left-color: rgba(255,255,255,.05);
@@ -340,19 +329,19 @@
 /* ─── Card expanded detail ─── */
 .cardDetail {
   padding: 0 18px 16px;
-  border-top: 1px solid rgba(255,255,255,.07);
+  border-top: 1px solid var(--border);
   margin-top: 0;
 }
 
 /* ─── Message in expanded card ─── */
 .cardMessage {
   font-size: .82rem;
-  color: rgba(255,255,255,.60);
+  color: var(--text-2);
   line-height: 1.6;
   margin: 12px 0 10px;
   font-style: italic;
-  background: rgba(255,255,255,.04);
-  border-left: 3px solid rgba(245,200,0,.4);
+  background: var(--overlay);
+  border-left: 3px solid var(--y-border);
   padding: 8px 12px;
   border-radius: 0 4px 4px 0;
 }
@@ -379,8 +368,8 @@
   align-items: center;
   gap: 7px;
   padding: 6px 10px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
+  background: var(--overlay);
+  border: 1px solid var(--border);
   border-radius: var(--r-xs);
   color: var(--text-2);
   font-size: .78rem;
@@ -417,8 +406,8 @@
 .searchInput {
   width: 100%;
   padding: 10px 14px 10px 38px;
-  background: #0E1020;
-  border: 1.5px solid #1E2240;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: inherit;
@@ -452,8 +441,8 @@
   gap: 14px;
   padding: 14px 20px;
   margin-bottom: 12px;
-  background: #0A1628;
-  border: 1px solid #1A3050;
+  background: rgba(59,130,246,.08);
+  border: 1px solid rgba(59,130,246,.22);
   border-left: 5px solid #3B82F6;
   border-radius: var(--r-md);
   cursor: pointer;
@@ -461,16 +450,16 @@
   transition: background var(--t), box-shadow var(--t);
 }
 .puertoHeader:hover {
-  background: #0D1E38;
+  background: rgba(59,130,246,.14);
   box-shadow: 0 4px 20px rgba(59,130,246,0.14);
 }
 .puertoIconWrap {
   width: 36px; height: 36px;
-  background: #112244;
-  border: 1px solid #1E3A66;
+  background: rgba(59,130,246,.16);
+  border: 1px solid rgba(59,130,246,.30);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  color: #60A5FA;
+  color: var(--acc-blue);
   flex-shrink: 0;
 }
 .puertoInfo { flex: 1; min-width: 0; }
@@ -479,23 +468,23 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  color: #4D80C0;
+  color: var(--acc-blue);
   line-height: 1;
   margin-bottom: 3px;
 }
 .puertoNombre {
   font-size: .96rem;
   font-weight: 800;
-  color: #93C5FD;
+  color: var(--acc-blue);
   letter-spacing: .2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .puertoCount {
-  background: #112244;
-  color: #60A5FA;
-  border: 1px solid #1E3A66;
+  background: rgba(59,130,246,.16);
+  color: var(--acc-blue);
+  border: 1px solid rgba(59,130,246,.30);
   font-size: .72rem;
   font-weight: 800;
   padding: 3px 10px;
@@ -514,8 +503,8 @@
   gap: 12px;
   padding: 10px 16px;
   margin-bottom: 8px;
-  background: #0A1E1E;
-  border: 1px solid #163030;
+  background: rgba(13,148,136,.08);
+  border: 1px solid rgba(13,148,136,.22);
   border-left: 3px solid #0D9488;
   border-radius: var(--r-sm);
   cursor: pointer;
@@ -523,17 +512,17 @@
   transition: background var(--t);
 }
 .navieraHeader:hover {
-  background: #0D2626;
+  background: rgba(13,148,136,.15);
 }
 .navieraInitials {
   width: 34px; height: 34px;
-  background: #112828;
-  border: 1.5px solid #1A3E3E;
+  background: rgba(13,148,136,.16);
+  border: 1.5px solid rgba(13,148,136,.30);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
   font-size: .80rem;
   font-weight: 800;
-  color: #2DD4BF;
+  color: var(--acc-teal);
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -543,22 +532,22 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #2A7A72;
+  color: var(--acc-teal);
   line-height: 1;
   margin-bottom: 2px;
 }
 .navieraNombre {
   font-size: .88rem;
   font-weight: 700;
-  color: #99E6DE;
+  color: var(--acc-teal);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .navieraCount {
-  background: #112828;
-  color: #2DD4BF;
-  border: 1px solid #1A4040;
+  background: rgba(13,148,136,.16);
+  color: var(--acc-teal);
+  border: 1px solid rgba(13,148,136,.30);
   font-size: .70rem;
   font-weight: 700;
   padding: 2px 8px;
@@ -577,27 +566,27 @@
   gap: 10px;
   padding: 8px 14px;
   margin-bottom: 6px;
-  background: #111520;
-  border: 1px solid #1C2236;
-  border-left: 2px solid #475569;
+  background: var(--overlay);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--acc-gray);
   border-radius: var(--r-sm);
   cursor: pointer;
   user-select: none;
   transition: background var(--t), border-color var(--t);
 }
 .marinoHeader:hover {
-  background: #161B2E;
-  border-left-color: #94A3B8;
+  background: var(--overlay-2);
+  border-left-color: var(--acc-gray);
 }
 .marinoAvatar {
   width: 30px; height: 30px;
-  background: #1C2236;
-  border: 1px solid #2A334E;
+  background: var(--overlay-2);
+  border: 1px solid var(--border-2);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: .76rem;
   font-weight: 800;
-  color: #CBD5E1;
+  color: var(--text);
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -607,22 +596,22 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .9px;
-  color: #475569;
+  color: var(--muted);
   line-height: 1;
   margin-bottom: 2px;
 }
 .marinoNombre {
   font-size: .84rem;
   font-weight: 600;
-  color: #CBD5E1;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .marinoCount {
-  background: #1C2236;
-  color: #64748B;
-  border: 1px solid #2A334E;
+  background: var(--overlay-2);
+  color: var(--text-2);
+  border: 1px solid var(--border-2);
   font-size: .68rem;
   font-weight: 700;
   padding: 2px 7px;
@@ -745,7 +734,7 @@
 .badges { display: flex; align-items: center; gap: 7px; margin-top: 6px; }
 .badgeActive {
   background: var(--green-soft);
-  color: #4ADE80;
+  color: var(--acc-green);
   border-radius: 20px;
   font-size: .70rem;
   font-weight: 700;
@@ -761,7 +750,7 @@
 }
 .badgeDraft {
   background: rgba(148,163,184,.16);
-  color: #94A3B8;
+  color: var(--acc-gray);
   border: 1px solid rgba(148,163,184,.30);
   border-radius: 20px;
   font-size: .70rem;
@@ -770,7 +759,7 @@
 }
 .badgeReturned {
   background: rgba(239,68,68,.12);
-  color: #FCA5A5;
+  color: var(--acc-red);
   border: 1px solid rgba(239,68,68,.30);
   border-radius: 20px;
   font-size: .70rem;
@@ -781,7 +770,7 @@
 /* Devuelto por el Muelle → SP (naranja llamativo) */
 .badgeReview {
   background: rgba(249,115,22,.14);
-  color: #FDBA74;
+  color: var(--acc-orange);
   border: 1px solid rgba(249,115,22,.35);
   border-radius: 20px;
   font-size: .70rem;
@@ -795,7 +784,7 @@
   align-items: center;
   gap: 4px;
   background: rgba(34,197,94,.14);
-  color: #86EFAC;
+  color: var(--acc-green);
   border: 1px solid rgba(34,197,94,.35);
   border-radius: 20px;
   font-size: .70rem;
@@ -818,7 +807,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .5px;
-  color: #FCA5A5;
+  color: var(--acc-red);
 }
 .motivoTexto { font-size: .84rem; color: var(--text); }
 .btnCorregir {
@@ -829,7 +818,7 @@
   background: rgba(239,68,68,.15);
   border: 1.5px solid rgba(239,68,68,.35);
   border-radius: var(--r-sm);
-  color: #FCA5A5;
+  color: var(--acc-red);
   font-size: .82rem;
   font-weight: 700;
   text-decoration: none;
@@ -846,12 +835,12 @@
 
 .colaSection {
   margin-bottom: 28px;
-  background: #130F00;
-  border: 1px solid #3A3000;
-  border-top: 3px solid #F5C800;
+  background: var(--card);
+  border: 1px solid var(--y-border);
+  border-top: 3px solid var(--y);
   border-radius: var(--r-md);
   overflow: hidden;
-  box-shadow: 0 4px 28px rgba(0,0,0,0.40);
+  box-shadow: var(--sh-md);
 }
 .colaToggle {
   width: 100%;
@@ -867,21 +856,21 @@
   text-align: left;
   transition: background var(--t);
 }
-.colaToggle:hover { background: #1C1500; }
+.colaToggle:hover { background: var(--hover); }
 .colaIconWrap {
   width: 40px; height: 40px;
-  background: #2A2200;
-  border: 1.5px solid #4A3E00;
+  background: var(--y-soft);
+  border: 1.5px solid var(--y-border);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  color: #F5C800;
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 .colaTextos { flex: 1; min-width: 0; }
 .colaTitulo {
   font-size: .88rem;
   font-weight: 800;
-  color: #F5C800;
+  color: var(--acc-gold);
   letter-spacing: .3px;
 }
 .colaSub {
@@ -890,8 +879,8 @@
   margin-top: 2px;
 }
 .colaCount {
-  background: #F5C800;
-  color: #0A0800;
+  background: var(--y);
+  color: var(--on-accent);
   border-radius: 99px;
   padding: 4px 12px;
   font-size: .76rem;
@@ -913,30 +902,30 @@
   flex-direction: column;
   gap: 8px;
   padding: 0 16px 16px;
-  border-top: 1px solid #2E2600;
+  border-top: 1px solid var(--y-border);
 }
 .colaItem {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  background: #0E0B00;
-  border: 1px solid #2A2200;
+  background: var(--card-2);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   margin-top: 8px;
   transition: background var(--t), border-color var(--t);
 }
 .colaItem:hover {
-  background: #181200;
-  border-color: #5A4A00;
+  background: var(--overlay);
+  border-color: var(--y-border);
 }
 .colaItemIcon {
   width: 36px; height: 36px;
-  background: #1E1800;
-  border: 1px solid #2E2600;
+  background: var(--y-soft);
+  border: 1px solid var(--y-border);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  color: #888866;
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 .colaItemMain { flex: 1; min-width: 0; }
@@ -963,9 +952,9 @@
   padding: 10px;
   margin-top: 4px;
   background: transparent;
-  border: 1px dashed #3A3000;
+  border: 1px dashed var(--y-border);
   border-radius: var(--r-sm);
-  color: #F5C800;
+  color: var(--acc-gold);
   font-size: .78rem;
   font-weight: 600;
   font-family: inherit;
@@ -974,8 +963,8 @@
   transition: background var(--t), border-color var(--t);
 }
 .verTodosBtn:hover {
-  background: rgba(245,200,0,.06);
-  border-color: #F5C800;
+  background: var(--y-soft);
+  border-color: var(--y);
 }
 .colaItemMsg {
   margin-top: 5px;
@@ -1031,7 +1020,7 @@
   transition: background var(--t), border-color var(--t);
 }
 .btnCopy:hover { background: rgba(245,200,0,.30); border-color: rgba(245,200,0,.78); }
-.btnCopy.copied { background: var(--green-soft); border-color: rgba(34,197,94,.40); color: #4ADE80; }
+.btnCopy.copied { background: var(--green-soft); border-color: rgba(34,197,94,.40); color: var(--acc-green); }
 
 .btnDelete {
   width: 34px; height: 34px;
@@ -1066,13 +1055,13 @@
 
 .btnDevolverMuelle {
   background: rgba(249,115,22,.12);
-  color: #FDBA74;
+  color: var(--acc-orange);
   border-color: rgba(249,115,22,.35);
 }
 .btnDevolverMuelle:hover {
   background: rgba(249,115,22,.22);
   border-color: rgba(249,115,22,.55);
-  color: #FDBA74;
+  color: var(--acc-orange);
 }
 
 /* ─── Footer ─── */

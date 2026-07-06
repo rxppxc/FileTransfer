@@ -82,7 +82,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .6px;
-  color: #FCA5A5;
+  color: var(--acc-red);
   border-bottom: 1px solid rgba(239,68,68,.18);
 }
 .motivoBody { padding: 14px 18px; }
@@ -148,7 +148,7 @@
   background: rgba(239,68,68,.10);
   border: 1.5px solid rgba(239,68,68,.30);
   border-radius: var(--r-sm);
-  color: #FCA5A5;
+  color: var(--acc-red);
   cursor: pointer;
   flex-shrink: 0;
   transition: background var(--t), border-color var(--t);
@@ -165,7 +165,7 @@
   background: rgba(34,197,94,.12);
   border: 1.5px solid rgba(34,197,94,.40);
   border-radius: var(--r-sm);
-  color: #4ADE80;
+  color: var(--acc-green);
   font-family: inherit;
   font-size: .85rem;
   font-weight: 700;
@@ -209,7 +209,7 @@
   background: rgba(239,68,68,.10);
   border: 1px solid rgba(239,68,68,.30);
   border-left: 4px solid #EF4444;
-  color: #FCA5A5;
+  color: var(--acc-red);
   padding: 18px 22px;
   border-radius: var(--r-md);
   font-size: .88rem;

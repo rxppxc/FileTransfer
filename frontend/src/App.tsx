@@ -16,6 +16,7 @@ import PaginaCorreccion           from "./modulos/transferencias/PaginaCorreccio
 import PaginaUsuarios             from "./modulos/administracion/PaginaUsuarios";
 import PaginaRoles                from "./modulos/administracion/PaginaRoles";
 import PaginaEstadisticas         from "./modulos/administracion/PaginaEstadisticas";
+import PaginaPuertosNavieras      from "./modulos/administracion/PaginaPuertosNavieras";
 import {
   AVISO_INACTIVIDAD_MS as AVISO_MS,
   LOGOUT_INACTIVIDAD_MS as LOGOUT_MS,
@@ -147,6 +148,7 @@ export default function App() {
               <Route path="/transfers/:id/corregir" element={<RutaPrivada><PaginaCorreccion /></RutaPrivada>} />
               <Route path="/admin"        element={<RutaAdmin><PaginaUsuarios /></RutaAdmin>} />
               <Route path="/admin/roles"  element={<RutaAdmin><PaginaRoles /></RutaAdmin>} />
+              <Route path="/admin/puertos-navieras" element={<RutaAdmin><PaginaPuertosNavieras /></RutaAdmin>} />
               <Route path="/admin/stats"  element={<RutaStats><PaginaEstadisticas /></RutaStats>} />
               <Route path="*"           element={<Navigate to="/dashboard" replace />} />
               </Routes>

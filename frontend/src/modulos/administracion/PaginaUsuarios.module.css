@@ -83,7 +83,7 @@
   border-radius: var(--r-sm);
   border: 1.5px solid rgba(239,68,68,.40);
   background: rgba(239,68,68,.10);
-  color: #FCA5A5;
+  color: var(--acc-red);
   font-size: .80rem;
   font-weight: 600;
   font-family: inherit;
@@ -284,7 +284,7 @@
   background: rgba(34,197,94,.12);
   border: 1.5px solid rgba(34,197,94,.40);
   border-radius: var(--r-sm);
-  color: #4ADE80;
+  color: var(--acc-green);
   font-size: .80rem;
   font-weight: 700;
   font-family: inherit;
@@ -386,7 +386,7 @@
   font-weight: 700;
 }
 .badgeAdmin    { background: rgba(245,200,0,.14); color: var(--y); border: 1px solid rgba(245,200,0,.30); }
-.badgeUsuario  { background: rgba(148,163,184,.12); color: #94A3B8; border: 1px solid rgba(148,163,184,.22); }
+.badgeUsuario  { background: rgba(148,163,184,.12); color: var(--acc-gray); border: 1px solid rgba(148,163,184,.22); }
 
 .rolSelect {
   padding: 5px 10px;
@@ -407,8 +407,8 @@
   box-shadow: 0 0 0 3px rgba(245,200,0,.12);
 }
 .rolSelect:disabled { opacity: .55; cursor: not-allowed; }
-.badgeActive   { background: rgba(34,197,94,.14); color: #4ADE80; border: 1px solid rgba(34,197,94,.25); }
-.badgeInactive { background: rgba(239,68,68,.12); color: #FCA5A5; border: 1px solid rgba(239,68,68,.22); }
+.badgeActive   { background: rgba(34,197,94,.14); color: var(--acc-green); border: 1px solid rgba(34,197,94,.25); }
+.badgeInactive { background: rgba(239,68,68,.12); color: var(--acc-red); border: 1px solid rgba(239,68,68,.22); }
 
 /* ─── Actions ─── */
 .actions {
@@ -444,7 +444,7 @@
 .btnQuitarAdmin {
   background: rgba(148,163,184,.10);
   border: 1.5px solid rgba(148,163,184,.30);
-  color: #94A3B8;
+  color: var(--acc-gray);
 }
 .btnQuitarAdmin:hover:not(:disabled) {
   background: rgba(148,163,184,.20);
@@ -454,7 +454,7 @@
 .btnDesactivar {
   background: rgba(245,158,11,.12);
   border: 1.5px solid rgba(245,158,11,.35);
-  color: #FBB924;
+  color: var(--acc-amber);
 }
 .btnDesactivar:hover:not(:disabled) {
   background: rgba(245,158,11,.22);
@@ -463,7 +463,7 @@
 .btnActivar {
   background: rgba(34,197,94,.12);
   border: 1.5px solid rgba(34,197,94,.35);
-  color: #4ADE80;
+  color: var(--acc-green);
 }
 .btnActivar:hover:not(:disabled) {
   background: rgba(34,197,94,.22);
@@ -472,13 +472,13 @@
 .btnEliminar {
   background: rgba(239,68,68,.10);
   border: 1.5px solid rgba(239,68,68,.30);
-  color: #FCA5A5;
+  color: var(--acc-red);
 }
 .btnEliminar:hover { background: rgba(239,68,68,.20); border-color: rgba(239,68,68,.55); }
 .btnEliminarConfirm {
   background: rgba(239,68,68,.18);
   border: 1.5px solid rgba(239,68,68,.55);
-  color: #F87171;
+  color: var(--acc-red);
 }
 .btnCancelar {
   background: var(--surface-2);
@@ -554,13 +554,14 @@
   padding: 5px 10px;
   border-radius: 8px;
   background: rgba(59,130,246,.12);
-  color: #93C5FD;
-  border: 1px solid rgba(59,130,246,.30);
+  color: #2563EB;
+  border: 1px solid rgba(59,130,246,.34);
   font-size: .78rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter .12s, background .12s;
 }
+:global([data-theme="dark"]) .btnPuertos { color: #93C5FD; }
 .btnPuertos:hover {
   background: rgba(59,130,246,.20);
   filter: brightness(1.1);
@@ -578,13 +579,13 @@
 .puertosPanel {
   padding: 16px 20px;
   border-top: 2px solid rgba(59,130,246,.25);
-  background: rgba(10,22,40,.35);
+  background: var(--surface-2);
 }
 .puertosHeader {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #93C5FD;
+  color: #2563EB;
   font-size: .74rem;
   font-weight: 800;
   letter-spacing: 1px;
@@ -603,8 +604,8 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 20px;
-  background: rgba(255,255,255,.04);
-  border: 1.5px solid rgba(255,255,255,.10);
+  background: var(--overlay);
+  border: 1.5px solid var(--border-2);
   color: var(--text-2);
   font-size: .82rem;
   font-weight: 600;
@@ -616,14 +617,15 @@
   cursor: pointer;
 }
 .puertoChip:hover {
-  background: rgba(59,130,246,.08);
-  border-color: rgba(59,130,246,.30);
+  background: rgba(59,130,246,.12);
+  border-color: rgba(59,130,246,.40);
 }
 .puertoChipOn {
-  background: rgba(59,130,246,.18);
-  color: #DBEAFE;
+  background: rgba(59,130,246,.20);
+  color: #1E40AF;
   border-color: rgba(59,130,246,.55);
 }
+:global([data-theme="dark"]) .puertoChipOn { color: #DBEAFE; }
 .puertosActions {
   display: flex;
   gap: 8px;
@@ -650,7 +652,7 @@
 .btnGuardarPuertos:disabled { opacity: .6; cursor: not-allowed; }
 .btnCancelarPuertos {
   background: transparent;
-  border-color: rgba(255,255,255,.15);
+  border-color: var(--border-2);
   color: var(--text);
 }
-.btnCancelarPuertos:hover { background: rgba(255,255,255,.06); }
+.btnCancelarPuertos:hover { background: var(--hover); }

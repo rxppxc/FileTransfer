@@ -104,7 +104,7 @@
 .itemSalir { color: rgba(239,68,68,.80); }
 .itemSalir:hover {
   background: rgba(239,68,68,.10);
-  color: #f87171;
+  color: var(--acc-red);
 }
 
 .sep {

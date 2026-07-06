@@ -63,6 +63,8 @@ async def obtener_id_usuario_actual(
     )).scalar_one_or_none()
     if estado is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="La cuenta ya no existe.")
-    if estado != EstadoUsuario.ACTIVO.value and estado != "active":
+    # EstadoUsuario hereda de str, así que el miembro enum y su .value ("active")
+    # comparan igual; una sola comparación cubre ambos casos.
+    if estado != EstadoUsuario.ACTIVO.value:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="La cuenta está desactivada.")
     return uid

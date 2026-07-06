@@ -1,0 +1,96 @@
+.barra {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-xs);
+  position: relative;
+  z-index: 1;
+}
+
+.icono {
+  display: inline-flex;
+  color: var(--y);
+  line-height: 0;
+}
+.rotulo {
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-2);
+  margin-right: 4px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  padding: 6px 13px;
+  border: 1.5px solid var(--border-2);
+  border-radius: 20px;
+  background: var(--overlay);
+  color: var(--text-2);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s var(--ease), border-color .15s var(--ease), color .15s var(--ease);
+}
+.chip:hover {
+  border-color: var(--y-border);
+  color: var(--text);
+}
+.chipActivo {
+  background: var(--y-soft);
+  border-color: var(--y);
+  color: var(--acc-gold);
+}
+
+.rango {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dateInput {
+  padding: 6px 10px;
+  border: 1.5px solid var(--input-border);
+  border-radius: var(--r-sm);
+  background: var(--input-bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: .82rem;
+  outline: none;
+  transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+  color-scheme: light dark;
+}
+.dateInput:focus {
+  border-color: var(--y);
+  box-shadow: 0 0 0 3px rgba(245,200,0,.12);
+}
+.sep { color: var(--muted); font-weight: 700; }
+
+.limpiar {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s var(--ease), color .15s var(--ease);
+}
+.limpiar:hover { background: var(--hover); color: var(--text); }
+
+@media (max-width: 560px) {
+  .rango { width: 100%; }
+  .limpiar { margin-left: 0; }
+}

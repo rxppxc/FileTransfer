@@ -35,7 +35,7 @@ class Configuracion(BaseSettings):
     MAIL_USERNAME:  str = ""
     MAIL_PASSWORD:  str = ""
     MAIL_FROM:      str = ""
-    MAIL_FROM_NAME: str = "FileTransfer SNM"
+    MAIL_FROM_NAME: str = "FileTransfer - SNM"
 
     # Limpieza automática de transferencias expiradas
     LIMPIEZA_INTERVALO_HORAS: int = 6   # cada cuántas horas corre el proceso

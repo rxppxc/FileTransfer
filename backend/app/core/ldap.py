@@ -76,7 +76,8 @@ class ServicioLDAP:
             return True
         except LDAPBindError as e:
             msg = str(e)
-            logger.warning(f"[LDAP] Autenticación fallida para '{dn}': {e}")
+            # No incluir el DN en el log — revela la estructura del AD (regla #4).
+            logger.warning("[LDAP] Autenticación fallida (bind rechazado).")
             if "data 773" in msg or "data 532" in msg:
                 logger.warning("[LDAP] La cuenta requiere cambio de contraseña o está expirada.")
             elif "data 533" in msg:
@@ -85,10 +86,10 @@ class ServicioLDAP:
                 logger.warning("[LDAP] La cuenta está bloqueada en Active Directory.")
             return False
         except LDAPException as e:
-            logger.error(f"[LDAP] Error LDAP autenticando '{dn}': {e}", exc_info=True)
+            logger.error(f"[LDAP] Error LDAP durante la autenticación: {e}", exc_info=True)
             return False
         except Exception as e:
-            logger.error(f"[LDAP] Error inesperado autenticando '{dn}': {e}", exc_info=True)
+            logger.error(f"[LDAP] Error inesperado durante la autenticación: {e}", exc_info=True)
             return False
 
 

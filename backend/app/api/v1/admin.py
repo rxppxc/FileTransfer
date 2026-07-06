@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -7,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from ldap3.core.exceptions import LDAPException
 from app.infrastructure.database import obtener_sesion_bd
 from app.core.security import obtener_id_usuario_actual
-from app.core.permisos import es_admin_efectivo
+from app.core.permisos import es_admin_efectivo, requerir_algun_permiso
 from app.core.ldap import servicio_ldap
 from app.domain.models.user import Usuario, EstadoUsuario
 from app.domain.models.transfer import Transferencia, ArchivoTransferencia, EstadoTransferencia
@@ -15,7 +16,7 @@ from app.domain.models.carpeta import Carpeta
 from app.domain.models.puerto import Puerto
 from app.domain.models.rol import Rol, Permiso, RolPermiso
 from app.domain.repositories.user_repository import RepositorioUsuario
-from app.domain.schemas.user import SalidaUsuario
+from app.domain.schemas.user import SalidaUsuario, DatosCrearUsuario, DatosCambiarEstado
 from app.domain.schemas.carpeta import SalidaCarpeta, DatosCrearCarpeta
 from app.domain.schemas.puerto import SalidaPuerto, DatosCrearPuerto
 from app.domain.schemas.rol import (
@@ -74,16 +75,12 @@ async def listar_usuarios(
 
 @enrutador.post("/usuarios", response_model=SalidaUsuario, status_code=201)
 async def crear_usuario(
-    datos: dict,
+    datos: DatosCrearUsuario,
     _: int = Depends(requerir_admin),
     sesion: AsyncSession = Depends(obtener_sesion_bd),
 ):
-    username = str(datos.get("username", "")).strip()
-    if not username:
-        raise HTTPException(status_code=400, detail="Se requiere el nombre de usuario.")
-
     try:
-        ldap_usuario = await asyncio.to_thread(servicio_ldap.buscar_usuario, username)
+        ldap_usuario = await asyncio.to_thread(servicio_ldap.buscar_usuario, datos.username)
     except LDAPException as e:
         logger.error(f"Error buscando usuario en AD: {e}")
         raise HTTPException(status_code=503, detail="No se pudo conectar al Active Directory.")
@@ -104,20 +101,19 @@ async def crear_usuario(
 @enrutador.patch("/usuarios/{user_id}/estado", response_model=SalidaUsuario)
 async def cambiar_estado(
     user_id: int,
-    datos: dict,
-    _: int = Depends(requerir_admin),
+    datos: DatosCambiarEstado,
+    admin_id: int = Depends(requerir_admin),
     sesion: AsyncSession = Depends(obtener_sesion_bd),
 ):
+    if user_id == admin_id and datos.status != EstadoUsuario.ACTIVO:
+        raise HTTPException(status_code=400, detail="No puedes desactivar tu propia cuenta.")
+
     resultado = await sesion.execute(select(Usuario).where(Usuario.id == user_id))
     usuario = resultado.scalar_one_or_none()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado.")
 
-    try:
-        usuario.status = EstadoUsuario(datos.get("status", ""))
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Estado inválido. Use 'active' o 'inactive'.")
-
+    usuario.status = datos.status
     await sesion.flush()
     await sesion.refresh(usuario)
     return SalidaUsuario.model_validate(usuario)
@@ -505,7 +501,10 @@ async def asignar_puertos_a_usuario(
 
 @enrutador.get("/stats")
 async def obtener_estadisticas(
-    _: int = Depends(requerir_admin),
+    # Admin ve todo por el shortcut interno de usuario_tiene_permiso(); Sector
+    # Pacífico entra por tener el permiso T-PROCESAR-PACIFICO. Antes esto era
+    # admin-only aunque el frontend ya le mostraba el link a SP (quedaba roto).
+    _: int = Depends(requerir_algun_permiso("T-PROCESAR-PACIFICO")),
     sesion: AsyncSession = Depends(obtener_sesion_bd),
 ):
     # Conteos a nivel de BD — evita cargar filas completas a memoria.
@@ -580,8 +579,8 @@ async def obtener_estadisticas(
     return {
         "usuarios":             total_usuarios,
         "transferencias":       total_transferencias,
-        "activas":              len(activas),
-        "expiradas":            len(expiradas),
+        "activas":              activas,
+        "expiradas":            expiradas,
         "total_descargas":      total_descargas,
         "storage_bytes":        total_storage,
         "carpetas":             carpetas_stats,

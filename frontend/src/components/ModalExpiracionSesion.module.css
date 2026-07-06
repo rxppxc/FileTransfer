@@ -10,14 +10,14 @@
 }
 
 .modal {
-  background: #1a1d23;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2.5rem 2rem;
   width: 100%;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--sh-lg);
 }
 
 .icono {
@@ -26,14 +26,14 @@
 }
 
 .titulo {
-  color: #ffffff;
+  color: var(--text);
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 0.75rem;
 }
 
 .texto {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-2);
   font-size: 0.9rem;
   margin: 0 0 1.5rem;
   line-height: 1.5;
@@ -42,7 +42,7 @@
 .cuenta {
   font-size: 2.75rem;
   font-weight: 800;
-  color: #f5c518;
+  color: var(--y-dark);
   letter-spacing: 0.05em;
   margin-bottom: 2rem;
   font-variant-numeric: tabular-nums;
@@ -57,33 +57,34 @@
 .btnContinuar {
   width: 100%;
   padding: 0.75rem;
-  background: #f5c518;
-  color: #0a0c10;
+  background: var(--y);
+  color: var(--on-accent);
   border: none;
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: filter 0.15s;
 }
 
 .btnContinuar:hover {
-  opacity: 0.88;
+  filter: brightness(1.06);
 }
 
 .btnSalir {
   width: 100%;
   padding: 0.75rem;
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-2);
+  border: 1px solid var(--border-2);
   border-radius: 8px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 
 .btnSalir:hover {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--text);
+  border-color: var(--border-2);
+  background: var(--hover);
 }

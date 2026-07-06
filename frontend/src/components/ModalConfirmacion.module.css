@@ -12,11 +12,11 @@
 .modal {
   background: var(--surface, #1f2433);
   color: var(--text, #f4f5f8);
-  border: 1px solid rgba(255, 255, 255, .08);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 22px 24px;
   width: min(420px, 92vw);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, .35);
+  box-shadow: var(--sh-lg);
   animation: zoomIn .14s ease-out;
 }
 
@@ -53,10 +53,10 @@
 
 .btnCancelar {
   background: transparent;
-  border-color: rgba(255, 255, 255, .15);
+  border-color: var(--border-2);
   color: var(--text, #f4f5f8);
 }
-.btnCancelar:hover { background: rgba(255, 255, 255, .06); }
+.btnCancelar:hover { background: var(--hover); }
 
 .btnConfirmar {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);

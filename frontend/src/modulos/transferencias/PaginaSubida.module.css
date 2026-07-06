@@ -91,7 +91,7 @@
 .error {
   display: flex; align-items: flex-start; gap: 9px;
   background: var(--red-soft); border: 1px solid rgba(239,68,68,.22);
-  border-radius: var(--r-sm); color: #FCA5A5;
+  border-radius: var(--r-sm); color: var(--acc-red);
   font-size: .87rem; padding: 11px 14px; margin-bottom: 20px;
 }
 .error svg { flex-shrink: 0; margin-top: 1px; }
@@ -183,7 +183,7 @@
 
 .field { display: flex; flex-direction: column; gap: 5px; }
 .label { font-size: .82rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 4px; }
-.req  { color: #F87171; font-weight: 700; font-size: .82rem; line-height: 1; }
+.req  { color: var(--acc-red); font-weight: 700; font-size: .82rem; line-height: 1; }
 .opt  { font-weight: 400; color: var(--muted); font-size: .76rem; }
 .fieldHint { margin: 0; font-size: .80rem; color: var(--text-2); line-height: 1.5; }
 .fieldHint strong { color: var(--y); font-weight: 700; }
@@ -197,7 +197,7 @@
   border-radius: 20px;
   background: rgba(248,113,113,.12);
   border: 1px solid rgba(248,113,113,.3);
-  color: #F87171;
+  color: var(--acc-red);
   font-size: .68rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -214,7 +214,7 @@
   transition: border-color var(--t) var(--ease), background var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 .input::placeholder, .textarea::placeholder { color: rgba(255,255,255,.42); }
-.select option { background: #1C1F36; color: var(--text); }
+.select option { background: var(--surface); color: var(--text); }
 .input:focus, .textarea:focus, .select:focus {
   border-color: var(--y);
   background: rgba(255,255,255,.12);

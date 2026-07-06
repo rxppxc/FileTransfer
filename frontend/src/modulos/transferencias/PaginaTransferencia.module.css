@@ -174,7 +174,7 @@
   background: var(--green-soft);
   border-bottom: 1px solid rgba(34,197,94,.15);
   padding: 13px 24px;
-  color: #4ADE80;
+  color: var(--acc-green);
   font-size: .87rem;
   font-weight: 600;
 }
@@ -249,15 +249,15 @@
   flex-shrink: 0;
 }
 .badge_imagen  { background: rgba(52,211,153,.14); color: #34D399; }
-.badge_pdf     { background: rgba(248,113,113,.14); color: #F87171; }
-.badge_word    { background: rgba(96,165,250,.14);  color: #60A5FA; }
-.badge_excel   { background: rgba(74,222,128,.14);  color: #4ADE80; }
+.badge_pdf     { background: rgba(248,113,113,.14); color: var(--acc-red); }
+.badge_word    { background: rgba(96,165,250,.14);  color: var(--acc-blue); }
+.badge_excel   { background: rgba(74,222,128,.14);  color: var(--acc-green); }
 .badge_ppt     { background: rgba(251,146,60,.14);  color: #FB923C; }
 .badge_zip     { background: rgba(245,200,0,.14);   color: var(--y); }
-.badge_video   { background: rgba(192,132,252,.14); color: #C084FC; }
-.badge_audio   { background: rgba(192,132,252,.14); color: #C084FC; }
-.badge_texto   { background: rgba(148,163,184,.14); color: #94A3B8; }
-.badge_otro    { background: rgba(148,163,184,.14); color: #94A3B8; }
+.badge_video   { background: rgba(192,132,252,.14); color: var(--acc-purple); }
+.badge_audio   { background: rgba(192,132,252,.14); color: var(--acc-purple); }
+.badge_texto   { background: rgba(148,163,184,.14); color: var(--acc-gray); }
+.badge_otro    { background: rgba(148,163,184,.14); color: var(--acc-gray); }
 
 /* ─── Botón de preview ─── */
 .previewBtn {
@@ -459,7 +459,7 @@
   transition: background var(--t), border-color var(--t);
 }
 .copyBtn:hover { background: rgba(245,200,0,.30); border-color: rgba(245,200,0,.78); }
-.copyBtn.copied { background: var(--green-soft); border-color: rgba(34,197,94,.40); color: #4ADE80; }
+.copyBtn.copied { background: var(--green-soft); border-color: rgba(34,197,94,.40); color: var(--acc-green); }
 
 /* ─── Back link ─── */
 .backRow {

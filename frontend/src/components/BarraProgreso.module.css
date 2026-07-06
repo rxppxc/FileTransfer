@@ -1,0 +1,23 @@
+.pista {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  background: var(--overlay);
+  border-radius: 4px;
+  overflow: hidden;
+}
+/* Extremo redondeado del lado del dato, recto en la base — nunca al revés. */
+.relleno {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  transition: width .4s var(--ease);
+}
+.relleno.gold   { background: var(--y); }
+.relleno.green  { background: var(--green); }
+.relleno.blue   { background: var(--acc-blue); }
+.relleno.gray   { background: var(--acc-gray); }
+.relleno.purple { background: var(--acc-purple); }
+.relleno.orange { background: var(--acc-orange); }
+.relleno.teal   { background: var(--acc-teal); }

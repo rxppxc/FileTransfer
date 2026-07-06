@@ -21,7 +21,7 @@ from app.domain.schemas.transfer import (
 from app.domain.schemas.carpeta import SalidaCarpeta
 from app.domain.models.user import Usuario
 from app.core.security import obtener_id_usuario_actual
-from app.core.permisos import requerir_permiso, requerir_algun_permiso
+from app.core.permisos import requerir_permiso, requerir_algun_permiso, usuario_tiene_permiso, es_admin_efectivo
 from app.core.email import enviar_notificacion_transferencia, enviar_notificacion_devolucion
 from app.core.http_utils import obtener_ip, obtener_agente
 from app.core.rate_limit import limiter, limite_descarga
@@ -206,10 +206,22 @@ async def cola_pacifico(
 @enrutador.get("/by-id/{transfer_id}", response_model=SalidaTransferencia)
 async def obtener_transferencia(
     transfer_id: int,
-    _perm: int = Depends(requerir_algun_permiso("T-PROCESAR-PACIFICO", "T-CREAR-BASICA", "T-CREAR-COMPLETA")),
-    svc:   ServicioTransferencia = Depends(_obtener_servicio),
+    usuario: Usuario = Depends(_obtener_usuario_actual),
+    _perm:   int     = Depends(requerir_algun_permiso("T-PROCESAR-PACIFICO", "T-CREAR-BASICA", "T-CREAR-COMPLETA")),
+    svc:     ServicioTransferencia = Depends(_obtener_servicio),
+    sesion:  AsyncSession = Depends(obtener_sesion_bd),
 ):
-    return await svc.obtener_por_id(transfer_id)
+    resultado = await svc.obtener_por_id(transfer_id)
+    # Sector Pacífico y Administrador ven cualquier transferencia (procesan la
+    # cola global). El resto (Naviera) solo puede ver las suyas — evita el IDOR
+    # de enumerar ids para leer transferencias de otras navieras. Devolvemos 404
+    # (no 403) para no filtrar la existencia del id.
+    puede_ver_todas = es_admin_efectivo(usuario) or await usuario_tiene_permiso(
+        sesion, usuario.id, "T-PROCESAR-PACIFICO"
+    )
+    if not puede_ver_todas and resultado.user_id != usuario.id:
+        raise HTTPException(status_code=404, detail="Transferencia no encontrada.")
+    return resultado
 
 
 @enrutador.patch("/by-id/{transfer_id}/procesar", response_model=SalidaTransferencia)

@@ -291,7 +291,7 @@
   align-items: center;
   gap: 4px;
   background: rgba(148,163,184,.12);
-  color: #94A3B8;
+  color: var(--acc-gray);
   border: 1px solid rgba(148,163,184,.25);
   font-size: .65rem;
   font-weight: 700;
@@ -405,7 +405,7 @@
   background: rgba(34,197,94,.14);
   border: 1.5px solid rgba(34,197,94,.45);
   border-radius: var(--r-sm);
-  color: #4ADE80;
+  color: var(--acc-green);
   font-size: .85rem;
   font-weight: 700;
   font-family: inherit;
@@ -436,13 +436,13 @@
 .btnEliminar {
   background: rgba(239,68,68,.10);
   border: 1.5px solid rgba(239,68,68,.30);
-  color: #FCA5A5;
+  color: var(--acc-red);
 }
 .btnEliminar:hover { background: rgba(239,68,68,.20); border-color: rgba(239,68,68,.55); }
 .btnEliminarConfirm {
   background: rgba(239,68,68,.18);
   border: 1.5px solid rgba(239,68,68,.55);
-  color: #F87171;
+  color: var(--acc-red);
 }
 .btnCancelar {
   background: var(--surface-2);

@@ -14,12 +14,11 @@ from slowapi import _rate_limit_exceeded_handler
 from app.core.config import obtener_configuracion
 from app.core.rate_limit import limiter
 from app.infrastructure.database import SesionLocal
-from app.infrastructure.migraciones import aplicar_migraciones
 from app.api.v1 import auth, transfers, admin
 from app.domain.models import carpeta as _carpeta_model  # noqa: registrar en ORM registry
 from app.domain.models import puerto as _puerto_model    # noqa: registrar en ORM registry
 from app.domain.models import rol as _rol_model          # noqa: registrar en ORM registry
-from app.domain.models.transfer import Transferencia, EstadoTransferencia
+from app.domain.models.transfer import Transferencia
 
 logger        = logging.getLogger(__name__)
 configuracion = obtener_configuracion()
@@ -28,8 +27,14 @@ _FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
 
 async def _purgar_expiradas() -> int:
-    """Elimina del disco y la BD las transferencias expiradas hace más de
-    LIMPIEZA_RETENER_DIAS días. Devuelve el número de transferencias purgadas."""
+    """Elimina del disco y la BD las transferencias cuya expiración venció hace
+    más de LIMPIEZA_RETENER_DIAS días. Devuelve el número de transferencias
+    purgadas.
+
+    Se purga por `expires_at` sin filtrar por estado: así también se limpian los
+    borradores, devueltos, en revisión y procesados que quedaron abandonados —
+    de lo contrario sus archivos se acumulaban en disco para siempre. Las filas
+    con `expires_at` NULL quedan fuera (la comparación con NULL no coincide)."""
     ahora    = datetime.now(timezone.utc)
     limite   = ahora - timedelta(days=configuracion.LIMPIEZA_RETENER_DIAS)
     purgadas = 0
@@ -38,7 +43,7 @@ async def _purgar_expiradas() -> int:
             resultado = await sesion.execute(
                 select(Transferencia).where(
                     and_(
-                        Transferencia.status == EstadoTransferencia.ACTIVA.value,
+                        Transferencia.expires_at.isnot(None),
                         Transferencia.expires_at < limite,
                     )
                 )
@@ -74,10 +79,11 @@ async def _tarea_limpieza():
 
 @asynccontextmanager
 async def ciclo_vida(app: FastAPI):
-    """Ciclo de vida de la aplicación: aplica migraciones al arranque y deja
-    corriendo en segundo plano la tarea de purga de transferencias expiradas.
+    """Ciclo de vida de la aplicación: deja corriendo en segundo plano la tarea
+    de purga de transferencias expiradas. El esquema de BD lo maneja Alembic
+    (`alembic upgrade head`, corrido por el entrypoint del contenedor antes de
+    levantar uvicorn) — ya no hay migraciones ad-hoc en el arranque de la app.
     Al apagar (Ctrl+C / SIGTERM) cancela la tarea limpiamente."""
-    await aplicar_migraciones()
     tarea = asyncio.create_task(_tarea_limpieza())
     yield
     tarea.cancel()
