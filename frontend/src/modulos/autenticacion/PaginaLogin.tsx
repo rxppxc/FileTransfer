@@ -62,7 +62,7 @@ export default function PaginaLogin() {
           <img src="/images/logo-snm.png" alt="SNM" className={styles.brandLogo} />
           <div className={styles.brandText}>
             <div className={styles.org}>Servicio Nacional de Migración</div>
-            <div className={styles.app}>FileTransfer -SNM</div>
+            <div className={styles.app}>FileTransfer - SNM</div>
           </div>
         </div>
 
