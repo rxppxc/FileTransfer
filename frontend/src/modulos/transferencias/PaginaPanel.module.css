@@ -198,7 +198,7 @@
   display: block;
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--y);
+  color: var(--acc-gold);
   margin-top: 7px;
   padding-bottom: 12px;
   letter-spacing: .1px;
@@ -268,7 +268,7 @@
   border-radius: var(--r-xl);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 20px;
-  color: var(--y);
+  color: var(--acc-gold);
 }
 .empty h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
 .empty p { color: var(--text-2); font-size: .88rem; margin-bottom: 24px; max-width: 280px; margin-left: auto; margin-right: auto; }
@@ -315,7 +315,7 @@
   user-select: none;
 }
 .cardTop:hover .cardTitle {
-  color: var(--y);
+  color: var(--acc-gold);
 }
 .cardChevron {
   color: var(--muted);
@@ -323,7 +323,7 @@
   transition: color var(--t);
 }
 .cardTop:hover .cardChevron {
-  color: var(--y);
+  color: var(--acc-gold);
 }
 
 /* ─── Card expanded detail ─── */
@@ -346,7 +346,7 @@
   border-radius: 0 4px 4px 0;
 }
 .msgQuote {
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: 1.1em;
   font-weight: 800;
   font-style: normal;
@@ -694,7 +694,7 @@
   border: 1px solid var(--y-border);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  color: var(--y);
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 
@@ -1014,7 +1014,7 @@
   display: inline-flex; align-items: center; gap: 5px;
   background: rgba(245,200,0,.18);
   border: 1.5px solid rgba(245,200,0,.52);
-  color: var(--y);
+  color: var(--acc-gold);
   border-radius: var(--r-xs);
   padding: 7px 13px; font-size: .80rem; font-weight: 700;
   transition: background var(--t), border-color var(--t);

@@ -191,7 +191,7 @@
   border-radius: var(--r-lg);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 16px;
-  color: var(--y);
+  color: var(--acc-gold);
 }
 .cardTitle {
   font-size: 1.18rem;
@@ -248,12 +248,12 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-.badge_imagen  { background: rgba(52,211,153,.14); color: #34D399; }
+.badge_imagen  { background: rgba(52,211,153,.14); color: var(--acc-green); }
 .badge_pdf     { background: rgba(248,113,113,.14); color: var(--acc-red); }
 .badge_word    { background: rgba(96,165,250,.14);  color: var(--acc-blue); }
 .badge_excel   { background: rgba(74,222,128,.14);  color: var(--acc-green); }
-.badge_ppt     { background: rgba(251,146,60,.14);  color: #FB923C; }
-.badge_zip     { background: rgba(245,200,0,.14);   color: var(--y); }
+.badge_ppt     { background: rgba(251,146,60,.14);  color: var(--acc-orange); }
+.badge_zip     { background: rgba(245,200,0,.14);   color: var(--acc-gold); }
 .badge_video   { background: rgba(192,132,252,.14); color: var(--acc-purple); }
 .badge_audio   { background: rgba(192,132,252,.14); color: var(--acc-purple); }
 .badge_texto   { background: rgba(148,163,184,.14); color: var(--acc-gray); }
@@ -408,7 +408,7 @@
   background: transparent;
   border: 1.5px solid var(--y);
   border-radius: var(--r-sm);
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .86rem;
   font-weight: 700;
   text-decoration: none;
@@ -453,7 +453,7 @@
   display: inline-flex; align-items: center; gap: 5px;
   background: rgba(245,200,0,.18);
   border: 1.5px solid rgba(245,200,0,.52);
-  color: var(--y);
+  color: var(--acc-gold);
   border-radius: var(--r-xs);
   padding: 6px 12px; font-size: .77rem; font-weight: 700; white-space: nowrap;
   transition: background var(--t), border-color var(--t);
@@ -493,8 +493,8 @@
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 18px;
 }
-.stateIcon.error   { background: var(--red-soft); color: var(--red); }
-.stateIcon.expired { background: rgba(245,158,11,.14); color: #F59E0B; }
+.stateIcon.error   { background: var(--red-soft); color: var(--acc-red); }
+.stateIcon.expired { background: rgba(245,158,11,.14); color: var(--acc-amber); }
 .stateCard h2 { font-size: 1.08rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
 .stateCard p  { color: var(--muted); font-size: .87rem; }
 

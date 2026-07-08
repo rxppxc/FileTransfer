@@ -124,7 +124,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--y);
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 .pageTitle h1 {
@@ -162,7 +162,7 @@
 .count {
   margin-left: 4px;
   background: var(--y-soft);
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .70rem;
   font-weight: 700;
   padding: 1px 7px;
@@ -252,7 +252,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #22D3EE;
+  color: var(--acc-cyan);
   flex-shrink: 0;
 }
 .adInfo { flex: 1; min-width: 0; }
@@ -305,7 +305,7 @@
   background: var(--y-soft);
   border: 1px solid var(--y-border);
   border-radius: var(--r-sm);
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .76rem;
   font-weight: 700;
 }
@@ -357,7 +357,7 @@
   border-radius: 50%;
   background: var(--y-soft);
   border: 1.5px solid var(--y-border);
-  color: var(--y);
+  color: var(--acc-gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -373,7 +373,7 @@
 .cellAvatarAdmin {
   background: rgba(245,200,0,.18) !important;
   border-color: rgba(245,200,0,.55) !important;
-  color: var(--y) !important;
+  color: var(--acc-gold) !important;
 }
 
 .badge {
@@ -385,7 +385,7 @@
   font-size: .72rem;
   font-weight: 700;
 }
-.badgeAdmin    { background: rgba(245,200,0,.14); color: var(--y); border: 1px solid rgba(245,200,0,.30); }
+.badgeAdmin    { background: rgba(245,200,0,.14); color: var(--acc-gold); border: 1px solid rgba(245,200,0,.30); }
 .badgeUsuario  { background: rgba(148,163,184,.12); color: var(--acc-gray); border: 1px solid rgba(148,163,184,.22); }
 
 .rolSelect {
@@ -435,7 +435,7 @@
 .btnHacerAdmin {
   background: rgba(245,200,0,.10);
   border: 1.5px solid rgba(245,200,0,.35);
-  color: var(--y);
+  color: var(--acc-gold);
 }
 .btnHacerAdmin:hover:not(:disabled) {
   background: rgba(245,200,0,.20);
@@ -554,14 +554,13 @@
   padding: 5px 10px;
   border-radius: 8px;
   background: rgba(59,130,246,.12);
-  color: #2563EB;
+  color: var(--acc-blue);
   border: 1px solid rgba(59,130,246,.34);
   font-size: .78rem;
   font-weight: 700;
   cursor: pointer;
   transition: filter .12s, background .12s;
 }
-:global([data-theme="dark"]) .btnPuertos { color: #93C5FD; }
 .btnPuertos:hover {
   background: rgba(59,130,246,.20);
   filter: brightness(1.1);
@@ -585,7 +584,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #2563EB;
+  color: var(--acc-blue);
   font-size: .74rem;
   font-weight: 800;
   letter-spacing: 1px;
@@ -622,10 +621,9 @@
 }
 .puertoChipOn {
   background: rgba(59,130,246,.20);
-  color: #1E40AF;
+  color: var(--acc-blue);
   border-color: rgba(59,130,246,.55);
 }
-:global([data-theme="dark"]) .puertoChipOn { color: #DBEAFE; }
 .puertosActions {
   display: flex;
   gap: 8px;

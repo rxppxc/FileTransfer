@@ -15,7 +15,7 @@
 
 .icono {
   display: inline-flex;
-  color: var(--y);
+  color: var(--acc-gold);
   line-height: 0;
 }
 .rotulo {

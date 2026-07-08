@@ -251,6 +251,12 @@
     linear-gradient(rgba(228,234,252,0.92), rgba(228,234,252,0.92)),
     url('/images/bg-migracion.jpg');
 }
+/* Footer: barra oscura sólida también en claro (igual que las demás vistas) */
+:global([data-theme="light"]) .footer {
+  background: rgba(15,20,50,.95);
+  border-top-color: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.60);
+}
 
 @media (max-width: 600px) {
   .main { padding: 24px 16px 48px; }

@@ -515,7 +515,7 @@ export default function PaginaPanel() {
         {error && (
           <div style={{
             background: "rgba(239,68,68,.13)", border: "1px solid rgba(239,68,68,.22)",
-            borderRadius: 8, color: "#FCA5A5", padding: "11px 14px",
+            borderRadius: 8, color: "var(--acc-red)", padding: "11px 14px",
             marginBottom: 20, fontSize: ".87rem",
           }}>
             {error}

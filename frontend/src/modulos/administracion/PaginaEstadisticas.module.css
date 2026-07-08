@@ -105,7 +105,7 @@
   background: var(--y-soft);
   border: 1.5px solid var(--y-border);
   border-radius: var(--r-sm);
-  color: var(--y);
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 .pageTitle h1 {
@@ -132,7 +132,7 @@
   background: var(--red-soft);
   border: 1px solid var(--red);
   border-radius: var(--r-sm);
-  color: var(--red);
+  color: var(--acc-red);
   padding: 11px 14px;
   font-size: .87rem;
   margin-bottom: 20px;
@@ -211,8 +211,8 @@
   transition: transform .22s var(--ease);
 }
 .statCard:hover .statIcon { transform: scale(1.08); }
-.statIcon.yellow { background: var(--y-soft);            color: var(--y-dark); }
-.statIcon.green  { background: var(--green-soft);        color: var(--green); }
+.statIcon.yellow { background: var(--y-soft);            color: var(--acc-gold); }
+.statIcon.green  { background: var(--green-soft);        color: var(--acc-green); }
 .statIcon.gray   { background: var(--overlay-2);         color: var(--muted); }
 .statIcon.blue   { background: rgba(59,130,246,.14);     color: var(--acc-blue); }
 .statIcon.purple { background: rgba(168,85,247,.14);     color: var(--acc-purple); }
@@ -262,7 +262,7 @@
   border-left: 4px solid var(--y);
   font-size: .80rem;
   font-weight: 800;
-  color: var(--y-dark);
+  color: var(--acc-gold);
   text-transform: uppercase;
   letter-spacing: .7px;
 }
@@ -289,16 +289,16 @@
   font-weight: 800;
   flex-shrink: 0;
 }
-.rankGold   { background: var(--y-soft);            color: var(--y-dark); }
+.rankGold   { background: var(--y-soft);            color: var(--acc-gold); }
 .rankSilver { background: var(--overlay-2);         color: var(--text-2); }
-.rankBronze { background: rgba(249,115,22,.15);     color: #EA7317; }
+.rankBronze { background: rgba(249,115,22,.15);     color: var(--acc-orange); }
 .uploaderAvatar {
   width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
   background: var(--y-soft);
   border: 1px solid var(--y-border);
-  color: var(--y-dark);
+  color: var(--acc-gold);
   font-size: .85rem;
   font-weight: 800;
   flex-shrink: 0;
@@ -307,7 +307,7 @@
 .uploaderName { font-size: .88rem; font-weight: 600; color: var(--text); }
 .uploaderBarWrap { margin-top: 7px; max-width: 260px; }
 .uploaderCount { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
-.uploaderNum   { font-size: 1.1rem; font-weight: 800; color: var(--y-dark); line-height: 1; }
+.uploaderNum   { font-size: 1.1rem; font-weight: 800; color: var(--acc-gold); line-height: 1; }
 .uploaderLabel { font-size: .68rem; color: var(--muted); }
 
 /* ─── Empty ─── */

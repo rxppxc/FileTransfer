@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--y);
+  color: var(--acc-gold);
   flex-shrink: 0;
 }
 .pageTitle h1 {
@@ -132,7 +132,7 @@
 .count {
   margin-left: 4px;
   background: var(--y-soft);
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .70rem;
   font-weight: 700;
   padding: 1px 7px;
@@ -210,7 +210,7 @@
 .permisoCodigo {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   background: var(--y-soft);
-  color: var(--y);
+  color: var(--acc-gold);
   border: 1px solid var(--y-border);
   padding: 3px 9px;
   border-radius: var(--r-xs);
@@ -271,7 +271,7 @@
   transition: transform .2s ease;
   flex-shrink: 0;
 }
-.rolChevronOpen { transform: rotate(90deg); color: var(--y); }
+.rolChevronOpen { transform: rotate(90deg); color: var(--acc-gold); }
 .rolInfo { flex: 1; min-width: 0; }
 .rolNombre {
   font-size: .94rem;
@@ -378,11 +378,11 @@
 .chipCodigo {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-weight: 700;
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .76rem;
   letter-spacing: .4px;
 }
-.permisoChipOn .chipCodigo { color: var(--y); }
+.permisoChipOn .chipCodigo { color: var(--acc-gold); }
 .chipNombre {
   font-weight: 500;
   font-size: .78rem;

@@ -141,10 +141,10 @@
   border-radius: var(--r-md);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 14px;
-  color: var(--y);
+  color: var(--acc-gold);
 }
 .dropTitle { font-size: .95rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.dropTitle strong { color: var(--y); text-decoration: underline; text-underline-offset: 2px; }
+.dropTitle strong { color: var(--acc-gold); text-decoration: underline; text-underline-offset: 2px; }
 .dropHint { font-size: .77rem; color: var(--muted); }
 
 /* ─── File list ─── */
@@ -186,9 +186,9 @@
 .req  { color: var(--acc-red); font-weight: 700; font-size: .82rem; line-height: 1; }
 .opt  { font-weight: 400; color: var(--muted); font-size: .76rem; }
 .fieldHint { margin: 0; font-size: .80rem; color: var(--text-2); line-height: 1.5; }
-.fieldHint strong { color: var(--y); font-weight: 700; }
+.fieldHint strong { color: var(--acc-gold); font-weight: 700; }
 .panelHint { margin: 0 0 14px; padding: 8px 20px; font-size: .80rem; color: var(--text-2); line-height: 1.5; }
-.panelHint strong { color: var(--y); font-weight: 700; }
+.panelHint strong { color: var(--acc-gold); font-weight: 700; }
 .reqBadge {
   display: inline-flex;
   align-items: center;
@@ -235,7 +235,7 @@
   cursor: pointer;
   transition: all var(--t) var(--ease);
 }
-.chip:hover { border-color: var(--y-border); color: var(--y); background: var(--y-soft); }
+.chip:hover { border-color: var(--y-border); color: var(--acc-gold); background: var(--y-soft); }
 .chipActive {
   border-color: var(--y);
   background: var(--y);

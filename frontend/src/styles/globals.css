@@ -43,6 +43,7 @@
   --acc-gold:   #F5C800;
   --acc-teal:   #2DD4BF;
   --acc-orange: #FDBA74;
+  --acc-cyan:   #22D3EE;
 
   --r-xs: 5px;
   --r-sm: 8px;
@@ -97,6 +98,7 @@
   --acc-gold:   #9A7B00;
   --acc-teal:   #0F766E;
   --acc-orange: #C2410C;
+  --acc-cyan:   #0E7490;
 }
 
 [data-theme="light"] body::before {

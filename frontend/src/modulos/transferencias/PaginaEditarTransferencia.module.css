@@ -127,7 +127,7 @@
 .count {
   margin-left: auto;
   background: var(--y-soft);
-  color: var(--y);
+  color: var(--acc-gold);
   font-size: .70rem;
   font-weight: 700;
   padding: 1px 8px;
@@ -317,7 +317,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .6px;
-  color: var(--y);
+  color: var(--acc-gold);
   margin-bottom: 4px;
 }
 .fileRow {
