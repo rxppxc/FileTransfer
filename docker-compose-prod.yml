@@ -84,7 +84,9 @@ services:
     depends_on:
       - backend
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      # 127.0.0.1 explícito: "localhost" resuelve primero a ::1 (IPv6) dentro
+      # del contenedor y nginx solo escucha en IPv4 → falso "unhealthy".
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
       interval: 30s
       timeout: 5s
       retries: 3
