@@ -154,8 +154,8 @@ export default function PaginaLogin() {
 
         <div className={styles.visualContent}>
           <img src="/images/logo-snm.png" alt="SNM" className={styles.visualLogo} />
-          <h2 className={styles.visualTitulo}>FileTransfer -SNM</h2>
-          <p className={styles.visualSubtitulo}>Repositorio de Transferencia Documental  </p>
+          <h2 className={styles.visualTitulo}>FileTransfer - SNM</h2>
+          <p className={styles.visualSubtitulo}>Repositorio de Transferencia Documental</p>
 
           <div className={styles.feats}>
             {CARACTERISTICAS.map((c) => (
