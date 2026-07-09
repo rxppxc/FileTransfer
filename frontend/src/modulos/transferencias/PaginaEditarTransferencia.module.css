@@ -170,25 +170,16 @@
   box-shadow: 0 0 0 3px rgba(245,200,0,.12);
 }
 
-.expChips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip {
-  padding: 7px 14px;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 999px;
+.expNota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: .85rem;
   color: var(--text-2);
-  font-size: .80rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--t);
+  line-height: 1.5;
 }
-.chip:hover { border-color: rgba(245,200,0,.40); color: var(--text); }
-.chipOn {
-  background: var(--y);
-  border-color: var(--y);
-  color: var(--ink);
-}
+.expNota strong { color: var(--acc-gold); font-weight: 700; }
 
 /* ─── Acciones ─── */
 .acciones {

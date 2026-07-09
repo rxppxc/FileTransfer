@@ -47,7 +47,7 @@ export const apiTransferencias = {
 
   procesar: (id: number, datos: {
     title?: string; message?: string; recipient?: string;
-    expiry_days?: number; max_downloads?: number;
+    max_downloads?: number;
     carpeta_id?: number | null; puerto_id?: number | null; marino?: string | null;
     observaciones?: string | null;
   }) =>
@@ -61,7 +61,7 @@ export const apiTransferencias = {
   quitarArchivo: (id: number, archivoId: number) =>
     clienteApi.delete<Transferencia>(`/transfers/by-id/${id}/archivos/${archivoId}`).then((r) => r.data),
 
-  reenviar: (id: number, datos: { message?: string; expiry_days?: number }) =>
+  reenviar: (id: number, datos: { message?: string }) =>
     clienteApi.post<Transferencia>(`/transfers/by-id/${id}/reenviar`, datos).then((r) => r.data),
 
   devolver: (id: number, motivo: string) =>

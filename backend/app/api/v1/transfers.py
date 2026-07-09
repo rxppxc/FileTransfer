@@ -91,7 +91,6 @@ async def crear_transferencia(
     title:         Optional[str]    = Form(None),
     message:       Optional[str]    = Form(None),
     recipient:     Optional[str]    = Form(None),
-    expiry_days:   int              = Form(7),
     max_downloads: Optional[int]    = Form(None),
     carpeta_id:    Optional[int]    = Form(None),
     puerto_id:     Optional[int]    = Form(None),
@@ -103,7 +102,7 @@ async def crear_transferencia(
 ):
     datos = DatosCrearTransferencia(
         title=title, message=message, recipient=recipient,
-        expiry_days=expiry_days, max_downloads=max_downloads,
+        max_downloads=max_downloads,
         carpeta_id=carpeta_id, puerto_id=puerto_id, marino=marino,
     )
     resultado = await svc.crear(usuario.id, datos, files)
@@ -117,7 +116,7 @@ async def crear_transferencia(
             "destinatario": resultado.recipient,
             "marino":       resultado.marino,
             "archivos":     [f.original_name for f in resultado.files],
-            "expira_dias":  expiry_days,
+            "expira_en":    resultado.expires_at.isoformat() if resultado.expires_at else None,
         },
         ip=obtener_ip(request), agente=obtener_agente(request),
     )
@@ -148,13 +147,12 @@ async def crear_borrador(
     title:       str              = Form(...),
     message:     Optional[str]    = Form(None),
     recipient:   Optional[str]    = Form(None),
-    expiry_days: int              = Form(7),
     usuario: Usuario = Depends(_obtener_usuario_actual),
     _perm:   int     = Depends(requerir_permiso("T-CREAR-BASICA")),
     svc:     ServicioTransferencia = Depends(_obtener_servicio),
     sesion:  AsyncSession = Depends(obtener_sesion_bd),
 ):
-    datos = DatosCrearBorrador(title=title, message=message, recipient=recipient, expiry_days=expiry_days)
+    datos = DatosCrearBorrador(title=title, message=message, recipient=recipient)
     resultado = await svc.crear_borrador(usuario.id, datos, files)
 
     await RepositorioAuditoria(sesion).registrar(

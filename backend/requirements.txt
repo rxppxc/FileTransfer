@@ -35,6 +35,9 @@ slowapi==0.1.10
 python-magic-bin==0.4.14; sys_platform == "win32"
 python-magic==0.4.27; sys_platform != "win32"
 
+# ── Detección de macros VBA en .doc/.xls (anti-malware) ─────────────────────
+oletools==0.60.2
+
 # ── Otros ───────────────────────────────────────────────────────────────────
 aiofiles==25.1.0
 aiosmtplib==5.1.2

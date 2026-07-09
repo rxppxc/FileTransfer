@@ -25,6 +25,13 @@ except Exception:  # pragma: no cover — libmagic no disponible
     magic = None  # type: ignore
     _MAGIC_DISPONIBLE = False
 
+try:
+    from oletools.olevba import VBA_Parser  # type: ignore
+    _OLETOOLS_DISPONIBLE = True
+except Exception:  # pragma: no cover — oletools no disponible
+    VBA_Parser = None  # type: ignore
+    _OLETOOLS_DISPONIBLE = False
+
 logger        = logging.getLogger(__name__)
 configuracion = obtener_configuracion()
 
@@ -36,57 +43,29 @@ TAMANO_CHUNK = 1024 * 1024  # 1 MB por fragmento
 _NOMBRE_INVALIDO = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
 EXTENSIONES_PERMITIDAS = {
-    # Documentos de oficina
-    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-    ".odt", ".ods", ".odp", ".txt", ".rtf", ".csv",
-    # Imágenes
-    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp", ".tiff",
-    # Audio y video
-    ".mp3", ".wav", ".mp4", ".mov", ".avi", ".mkv", ".webm",
-    # Comprimidos
-    ".zip", ".rar", ".7z", ".tar", ".gz",
-    # Otros
-    ".xml", ".json", ".md",
+    # Documentos de oficina — formatos legados a propósito (ver _verificar_sin_macros):
+    # .doc y .xls en vez de .docx/.xlsx. Decisión del dueño del sistema.
+    ".pdf", ".doc", ".xls",
+    # Imágenes (sin .svg: puede llevar <script> embebido — riesgo XSS)
+    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
 }
+
+# Extensiones que son contenedores OLE2 (Compound File Binary) y por lo tanto
+# pueden llevar macros VBA embebidas. Se escanean con oletools antes de aceptarlas.
+_EXTENSIONES_CON_MACROS_POSIBLES = {".doc", ".xls"}
 
 # MIME conocidos por extensión. Si python-magic está disponible se prefiere lo
 # que detecta del contenido. Si no, este mapa actúa de respaldo confiable.
 _MIME_POR_EXTENSION: dict[str, str] = {
     ".pdf": "application/pdf",
     ".doc": "application/msword",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".xls": "application/vnd.ms-excel",
-    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ".ppt": "application/vnd.ms-powerpoint",
-    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ".odt": "application/vnd.oasis.opendocument.text",
-    ".ods": "application/vnd.oasis.opendocument.spreadsheet",
-    ".odp": "application/vnd.oasis.opendocument.presentation",
-    ".txt": "text/plain",
-    ".rtf": "application/rtf",
-    ".csv": "text/csv",
     ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
     ".png": "image/png",
     ".gif": "image/gif",
     ".bmp": "image/bmp",
-    ".svg": "image/svg+xml",
     ".webp": "image/webp",
     ".tiff": "image/tiff",
-    ".mp3": "audio/mpeg",
-    ".wav": "audio/wav",
-    ".mp4": "video/mp4",
-    ".mov": "video/quicktime",
-    ".avi": "video/x-msvideo",
-    ".mkv": "video/x-matroska",
-    ".webm": "video/webm",
-    ".zip": "application/zip",
-    ".rar": "application/vnd.rar",
-    ".7z": "application/x-7z-compressed",
-    ".tar": "application/x-tar",
-    ".gz": "application/gzip",
-    ".xml": "application/xml",
-    ".json": "application/json",
-    ".md": "text/markdown",
 }
 
 
@@ -111,6 +90,43 @@ def _detectar_mime(ruta: Path, ext: str) -> str:
         except Exception as exc:  # pragma: no cover
             logger.warning("[mime] Detección por contenido falló: %s", exc)
     return _MIME_POR_EXTENSION.get(ext.lower(), "application/octet-stream")
+
+
+def _tiene_macros_sync(ruta: Path) -> bool:
+    """Analiza un archivo OLE2 (.doc/.xls) en busca de macros VBA. Síncrono
+    y potencialmente lento — llamar siempre vía asyncio.to_thread()."""
+    parser = VBA_Parser(str(ruta))
+    try:
+        return parser.detect_vba_macros()
+    finally:
+        parser.close()
+
+
+async def _verificar_sin_macros(ruta: Path, ext: str, nombre_original: str) -> None:
+    """Rechaza archivos .doc/.xls que contengan macros VBA. Falla cerrado: si
+    oletools no está disponible o no puede analizar el archivo, se rechaza
+    igual — preferimos un falso rechazo a aceptar un archivo sin garantías."""
+    if ext not in _EXTENSIONES_CON_MACROS_POSIBLES:
+        return
+    if not _OLETOOLS_DISPONIBLE:
+        logger.error("[macros] oletools no disponible — rechazando '%s' por precaución.", nombre_original)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="No se pudo validar el archivo de forma segura. Contacta al administrador.",
+        )
+    try:
+        tiene_macros = await asyncio.to_thread(_tiene_macros_sync, ruta)
+    except Exception as exc:
+        logger.warning("[macros] No se pudo analizar '%s': %s", nombre_original, exc)
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"No se pudo validar '{nombre_original}' de forma segura — el archivo podría estar dañado o no ser un documento Office válido.",
+        )
+    if tiene_macros:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"'{nombre_original}' contiene macros y no está permitido. Guárdalo sin macros e intenta de nuevo.",
+        )
 
 
 def _expira_a_medianoche(dias: int) -> datetime:
@@ -208,6 +224,13 @@ class ServicioTransferencia:
                         )
                     await f.write(fragmento)
 
+            # .doc/.xls: rechazar si tienen macros VBA embebidas
+            try:
+                await _verificar_sin_macros(ruta_archivo, ext, nombre_original)
+            except HTTPException:
+                ruta_archivo.unlink(missing_ok=True)
+                raise
+
             # MIME desde el contenido (no confiamos en lo que mande el cliente)
             mime_real = _detectar_mime(ruta_archivo, ext)
 
@@ -241,7 +264,7 @@ class ServicioTransferencia:
             title         = datos.title,
             message       = datos.message,
             recipient     = datos.recipient,
-            expires_at    = _expira_a_medianoche(datos.expiry_days),
+            expires_at    = _expira_a_medianoche(configuracion.TRANSFER_EXPIRY_DAYS),
             max_downloads = datos.max_downloads,
             status        = EstadoTransferencia.ACTIVA.value,
             carpeta_id    = datos.carpeta_id,
@@ -280,7 +303,7 @@ class ServicioTransferencia:
             title      = datos.title,
             message    = datos.message,
             recipient  = datos.recipient,
-            expires_at = _expira_a_medianoche(datos.expiry_days),
+            expires_at = _expira_a_medianoche(configuracion.TRANSFER_EXPIRY_DAYS),
             status     = EstadoTransferencia.BORRADOR.value,
             titulo_original       = datos.title,
             mensaje_original      = datos.message,
@@ -315,8 +338,6 @@ class ServicioTransferencia:
         if datos.puerto_id     is not None: transferencia.puerto_id     = datos.puerto_id
         if datos.marino        is not None: transferencia.marino        = datos.marino
         if datos.observaciones is not None: transferencia.observaciones = datos.observaciones
-        if datos.expiry_days   is not None:
-            transferencia.expires_at = _expira_a_medianoche(datos.expiry_days)
 
         await self.repo.guardar(transferencia)
         return SalidaTransferencia.model_validate(transferencia)
@@ -512,8 +533,9 @@ class ServicioTransferencia:
 
         if datos.message is not None:
             transferencia.message = datos.message
-        if datos.expiry_days is not None:
-            transferencia.expires_at = _expira_a_medianoche(datos.expiry_days)
+        # Renueva siempre a partir de este momento — no configurable por el
+        # cliente (ver DatosReenviar).
+        transferencia.expires_at = _expira_a_medianoche(configuracion.TRANSFER_EXPIRY_DAYS)
 
         transferencia.status = EstadoTransferencia.ACTIVA.value
         await self.repo.guardar(transferencia)

@@ -9,25 +9,15 @@ import { BotonVolver } from "../../components/BotonVolver";
 import { usePermisos } from "../../hooks/usePermisos";
 import {
   IconoSubir, IconoArchivo, IconoX, IconoAlerta, IconoEnviar,
-  IconoAjustes, IconoBarco, IconoAncla, IconoUsuario,
+  IconoAjustes, IconoBarco, IconoAncla, IconoUsuario, IconoReloj,
 } from "../../components/Iconos";
 import styles from "./PaginaSubida.module.css";
 
-const OPCIONES_EXPIRACION = [
-  { etiqueta: "1 día",   valor: 1  },
-  { etiqueta: "3 días",  valor: 3  },
-  { etiqueta: "7 días",  valor: 7  },
-  { etiqueta: "14 días", valor: 14 },
-  { etiqueta: "30 días", valor: 30 },
-];
+const DIAS_EXPIRACION_DEFECTO = 7;
 
 const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-  ".odt", ".ods", ".odp", ".txt", ".rtf", ".csv",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp", ".tiff",
-  ".mp3", ".wav", ".mp4", ".mov", ".avi", ".mkv", ".webm",
-  ".zip", ".rar", ".7z", ".tar", ".gz",
-  ".xml", ".json", ".md",
+  ".pdf", ".doc", ".xls",
+  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
 ].join(",");
 
 const TIPOS_PDF      = ".pdf";
@@ -50,7 +40,6 @@ export default function PaginaSubida() {
   const [titulo,         setTitulo]         = useState("");
   const [mensaje,        setMensaje]        = useState("");
   const [destinatario,   setDestinatario]   = useState("");
-  const [diasExpiracion, setDiasExpiracion] = useState(7);
   const [enviando,       setEnviando]       = useState(false);
   const [error,          setError]          = useState<string | null>(null);
 
@@ -123,8 +112,8 @@ export default function PaginaSubida() {
       archivos.forEach((a) => fd.append("files", a));
       fd.append("title", titulo);
       fd.append("message", mensaje);
-      if (modoCompleto) fd.append("expiry_days", String(diasExpiracion));
-      // modoBasico: expiry_days omitted → backend uses default (7 days); Sector Pacífico sets final expiry before resending
+      // La expiración ya no es configurable: el backend siempre usa
+      // TRANSFER_EXPIRY_DAYS (7 días) para toda transferencia nueva.
 
       if (modoCompleto) {
         fd.append("recipient", destinatario);
@@ -384,20 +373,12 @@ export default function PaginaSubida() {
 
               {modoCompleto && (
                 <div className={styles.optPanel}>
-                  <div className={styles.optHead}>Expiración <span className={styles.reqBadge}>Obligatorio</span></div>
+                  <div className={styles.optHead}>Expiración</div>
                   <div className={styles.optBody}>
-                    <div className={styles.expiryChips}>
-                      {OPCIONES_EXPIRACION.map((o) => (
-                        <button
-                          key={o.valor}
-                          type="button"
-                          className={`${styles.chip} ${diasExpiracion === o.valor ? styles.chipActive : ""}`}
-                          onClick={() => setDiasExpiracion(o.valor)}
-                        >
-                          {o.etiqueta}
-                        </button>
-                      ))}
-                    </div>
+                    <p className={styles.expiryNota}>
+                      <IconoReloj tamano={15} />
+                      Esta transferencia expirará automáticamente a los <strong>{DIAS_EXPIRACION_DEFECTO} días</strong> de su creación.
+                    </p>
                   </div>
                 </div>
               )}

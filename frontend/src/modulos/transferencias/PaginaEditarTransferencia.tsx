@@ -12,14 +12,9 @@ import {
 } from "../../components/Iconos";
 import styles from "./PaginaEditarTransferencia.module.css";
 
-const OPCIONES_EXP = [1, 3, 7, 14, 30];
 const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-  ".odt", ".ods", ".odp", ".txt", ".rtf", ".csv",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp", ".tiff",
-  ".mp3", ".wav", ".mp4", ".mov", ".avi", ".mkv", ".webm",
-  ".zip", ".rar", ".7z", ".tar", ".gz",
-  ".xml", ".json", ".md",
+  ".pdf", ".doc", ".xls",
+  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
 ].join(",");
 
 
@@ -44,7 +39,6 @@ export default function PaginaEditarTransferencia() {
   const [puertoId, setPuertoId] = useState<number | "">("");
   const [carpetaId, setCarpetaId] = useState<number | "">("");
   const [marino, setMarino] = useState("");
-  const [diasExp, setDiasExp] = useState(7);
   const [observaciones, setObservaciones] = useState("");
 
   // Devolver
@@ -112,7 +106,6 @@ export default function PaginaEditarTransferencia() {
         puerto_id: puertoId === "" ? null : puertoId,
         carpeta_id: carpetaId === "" ? null : carpetaId,
         marino: marino.trim() || "",
-        expiry_days: diasExp,
         observaciones: observaciones.trim() || null,
       });
       aplicarTransferencia(tr);
@@ -156,11 +149,9 @@ export default function PaginaEditarTransferencia() {
         puerto_id: puertoId as number,
         carpeta_id: carpetaId as number,
         marino: marino.trim(),
-        expiry_days: diasExp,
       });
       await apiTransferencias.reenviar(id, {
         message: mensaje.trim() || undefined,
-        expiry_days: diasExp,
       });
       notificar("Transferencia reenviada — correo en camino.");
       setTimeout(() => navegar("/dashboard"), 1200);
@@ -415,18 +406,10 @@ export default function PaginaEditarTransferencia() {
                   </div>
                   <div className={styles.fieldFull}>
                     <label>Vigencia desde el reenvío</label>
-                    <div className={styles.expChips}>
-                      {OPCIONES_EXP.map(d => (
-                        <button
-                          key={d}
-                          type="button"
-                          className={`${styles.chip} ${diasExp === d ? styles.chipOn : ""}`}
-                          onClick={() => setDiasExp(d)}
-                        >
-                          {d} día{d !== 1 ? "s" : ""}
-                        </button>
-                      ))}
-                    </div>
+                    <p className={styles.expNota}>
+                      <IconoCandado tamano={14} />
+                      Al reenviar, la vigencia se renueva automáticamente a <strong>7 días</strong> desde ese momento.
+                    </p>
                   </div>
                   <div className={styles.fieldFull}>
                     <label>Observaciones internas</label>

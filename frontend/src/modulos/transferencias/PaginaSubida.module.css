@@ -222,25 +222,17 @@
 }
 .textarea { resize: vertical; }
 
-/* Expiry chips */
-.expiryChips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip {
-  padding: 6px 13px;
-  border: 1.5px solid rgba(255,255,255,.22);
-  border-radius: 20px;
-  font-size: .78rem;
-  font-weight: 600;
-  color: rgba(255,255,255,.65);
-  background: rgba(255,255,255,.07);
-  cursor: pointer;
-  transition: all var(--t) var(--ease);
+/* Nota de expiración (fija, no editable) */
+.expiryNota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: .85rem;
+  color: var(--text-2);
+  line-height: 1.5;
 }
-.chip:hover { border-color: var(--y-border); color: var(--acc-gold); background: var(--y-soft); }
-.chipActive {
-  border-color: var(--y);
-  background: var(--y);
-  color: var(--ink);
-}
+.expiryNota strong { color: var(--acc-gold); font-weight: 700; }
 
 /* ─── Submit ─── */
 .submitBtn {
@@ -323,11 +315,6 @@
 }
 :global([data-theme="light"]) .input::placeholder,
 :global([data-theme="light"]) .textarea::placeholder { color: rgba(26,28,46,.38); }
-:global([data-theme="light"]) .chip {
-  border-color: rgba(0, 0, 0, .22);
-  color: #3D4070;
-  background: rgba(0, 0, 0, .05);
-}
 :global([data-theme="light"]) .btnLogout {
   background: #EF4444;
   border-color: #EF4444;

@@ -65,18 +65,10 @@ class DatosCrearTransferencia(BaseModel):
     title:         str
     recipient:     str
     message:       str | None = None
-    expiry_days:   int = 7
     max_downloads: int | None = None
     carpeta_id:    int | None = None
     puerto_id:     int | None = None
     marino:        str | None = None
-
-    @field_validator("expiry_days")
-    @classmethod
-    def validar_expiracion(cls, v: int) -> int:
-        if not 1 <= v <= 30:
-            raise ValueError("La expiración debe ser entre 1 y 30 días.")
-        return v
 
     @field_validator("title")
     @classmethod
@@ -128,7 +120,6 @@ class DatosCrearBorrador(BaseModel):
     title:       str
     message:     str | None = None
     recipient:   str | None = None
-    expiry_days: int = 7
 
     @field_validator("title")
     @classmethod
@@ -159,20 +150,12 @@ class DatosCrearBorrador(BaseModel):
             raise ValueError(f"El mensaje no puede superar {MENSAJE_MAX} caracteres.")
         return v or None
 
-    @field_validator("expiry_days")
-    @classmethod
-    def validar_expiracion(cls, v: int) -> int:
-        if not 1 <= v <= 30:
-            raise ValueError("La expiración debe ser entre 1 y 30 días.")
-        return v
-
 
 class DatosProcesarTransferencia(BaseModel):
     """Patch parcial para Sector Pacífico mientras procesa el borrador."""
     title:         str | None = None
     message:       str | None = None
     recipient:     str | None = None
-    expiry_days:   int | None = None
     max_downloads: int | None = None
     carpeta_id:    int | None = None
     puerto_id:     int | None = None
@@ -205,26 +188,12 @@ class DatosProcesarTransferencia(BaseModel):
         if len(v) > MENSAJE_MAX: raise ValueError(f"Máximo {MENSAJE_MAX} caracteres.")
         return v or None
 
-    @field_validator("expiry_days")
-    @classmethod
-    def _v_expiry(cls, v):
-        if v is None: return None
-        if not 1 <= v <= 30: raise ValueError("Entre 1 y 30 días.")
-        return v
-
 
 class DatosReenviar(BaseModel):
-    """Reenvía un borrador: cambia a ACTIVA y dispara correo.
-    Permite anexar un nuevo mensaje y renovar la expiración."""
-    message:     str | None = None
-    expiry_days: int | None = None
-
-    @field_validator("expiry_days")
-    @classmethod
-    def _v_expiry(cls, v):
-        if v is None: return None
-        if not 1 <= v <= 30: raise ValueError("Entre 1 y 30 días.")
-        return v
+    """Reenvía un borrador: cambia a ACTIVA y dispara correo. Permite anexar
+    un nuevo mensaje. La expiración se renueva siempre a partir de este
+    momento usando TRANSFER_EXPIRY_DAYS (no es configurable por el cliente)."""
+    message: str | None = None
 
     @field_validator("message")
     @classmethod
