@@ -7,7 +7,6 @@ import enum
 import typing
 
 if typing.TYPE_CHECKING:
-    from app.domain.models.carpeta import Carpeta
     from app.domain.models.puerto import Puerto
 
 
@@ -41,9 +40,9 @@ class Transferencia(Base):
     created_at:    Mapped[datetime]               = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at:    Mapped[datetime]               = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    carpeta_id: Mapped[int | None] = mapped_column(ForeignKey("carpetas.id", ondelete="SET NULL"), nullable=True, index=True)
     puerto_id:  Mapped[int | None] = mapped_column(ForeignKey("puertos.id",  ondelete="SET NULL"), nullable=True, index=True)
     marino:     Mapped[str | None] = mapped_column(String(255))
+    naviera:    Mapped[str | None] = mapped_column(String(255))
 
     # Snapshot original (inmutable) capturado al crear el borrador
     titulo_original:      Mapped[str | None] = mapped_column(String(255))
@@ -55,7 +54,6 @@ class Transferencia(Base):
 
     usuario:  Mapped["Usuario"]                     = relationship(back_populates="transferencias")
     archivos: Mapped[list["ArchivoTransferencia"]]  = relationship(back_populates="transferencia", cascade="all, delete-orphan")
-    carpeta:  Mapped["Carpeta | None"]              = relationship("Carpeta", back_populates="transferencias")
     puerto:   Mapped["Puerto | None"]               = relationship("Puerto")
 
     @property

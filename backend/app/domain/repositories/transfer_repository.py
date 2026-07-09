@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from app.domain.models.transfer import Transferencia, ArchivoTransferencia, EstadoTransferencia
-from app.domain.models.carpeta import Carpeta
 from app.domain.models.puerto import Puerto
 
 
@@ -16,7 +15,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.token == token)
@@ -29,7 +27,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.id == transfer_id)
@@ -42,7 +39,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.status == estado)
@@ -60,7 +56,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.status.in_(valores))
@@ -79,7 +74,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(
@@ -93,10 +87,10 @@ class RepositorioTransferencia:
 
     async def guardar(self, transferencia: Transferencia) -> None:
         await self.sesion.flush()
-        await self.sesion.refresh(transferencia, ["archivos", "usuario", "carpeta", "puerto"])
+        await self.sesion.refresh(transferencia, ["archivos", "usuario", "puerto"])
 
     async def refrescar(self, transferencia: Transferencia) -> None:
-        await self.sesion.refresh(transferencia, ["archivos", "carpeta", "puerto"])
+        await self.sesion.refresh(transferencia, ["archivos", "puerto"])
 
     async def eliminar_archivo(self, archivo: ArchivoTransferencia) -> None:
         await self.sesion.delete(archivo)
@@ -107,7 +101,6 @@ class RepositorioTransferencia:
             select(Transferencia)
             .options(
                 selectinload(Transferencia.archivos),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.user_id == user_id)
@@ -124,7 +117,6 @@ class RepositorioTransferencia:
             .options(
                 selectinload(Transferencia.archivos),
                 selectinload(Transferencia.usuario),
-                selectinload(Transferencia.carpeta),
                 selectinload(Transferencia.puerto),
             )
             .where(Transferencia.status == EstadoTransferencia.ACTIVA)
@@ -136,7 +128,7 @@ class RepositorioTransferencia:
     async def crear(self, transferencia: Transferencia) -> Transferencia:
         self.sesion.add(transferencia)
         await self.sesion.flush()
-        await self.sesion.refresh(transferencia, ["archivos", "usuario", "carpeta", "puerto"])
+        await self.sesion.refresh(transferencia, ["archivos", "usuario", "puerto"])
         return transferencia
 
     async def incrementar_descargas(self, token: str) -> None:

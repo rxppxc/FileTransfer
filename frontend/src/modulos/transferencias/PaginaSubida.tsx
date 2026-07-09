@@ -3,7 +3,6 @@ import type * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { apiTransferencias } from "../../api/transfers";
 import { formatBytes } from "../../utils/format";
-import type { Carpeta } from "../../types";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import { usePermisos } from "../../hooks/usePermisos";
@@ -44,19 +43,14 @@ export default function PaginaSubida() {
   const [error,          setError]          = useState<string | null>(null);
 
   const [puertos,       setPuertos]       = useState<{ id: number; nombre: string }[]>([]);
-  const [carpetas,      setCarpetas]      = useState<Carpeta[]>([]);
   const [puertoId,      setPuertoId]      = useState<number | "">("");
-  const [carpetaId,     setCarpetaId]     = useState<number | "">("");
+  const [naviera,       setNaviera]       = useState("");
   const [marino,        setMarino]        = useState("");
 
   useEffect(() => {
     if (!modoCompleto) return;
     apiTransferencias.listarPuertos().then(setPuertos).catch(() => {});
-    apiTransferencias.listarCarpetas().then(setCarpetas).catch(() => {});
   }, [modoCompleto]);
-
-  // Todas las navieras disponibles sin filtrar por puerto
-  const navierasFiltradas = carpetas;
 
   function agregarArchivos(lista: FileList | null) {
     if (!lista) return;
@@ -92,8 +86,8 @@ export default function PaginaSubida() {
     e.preventDefault();
     if (!archivos.length) return;
     if (modoCompleto) {
-      if (carpetas.length > 0 && carpetaId === "") {
-        setError("Debes seleccionar una naviera.");
+      if (!naviera.trim()) {
+        setError("Debes ingresar el nombre de la naviera.");
         return;
       }
       if (!marino.trim()) {
@@ -117,9 +111,9 @@ export default function PaginaSubida() {
 
       if (modoCompleto) {
         fd.append("recipient", destinatario);
-        if (carpetaId !== "") fd.append("carpeta_id", String(carpetaId));
-        if (puertoId  !== "") fd.append("puerto_id",  String(puertoId));
+        if (puertoId !== "") fd.append("puerto_id", String(puertoId));
         fd.append("marino", marino.trim());
+        fd.append("naviera", naviera.trim());
         const transferencia = await apiTransferencias.crear(fd);
         navegar(`/t/${transferencia.token}?new=1`);
       } else {
@@ -336,20 +330,18 @@ export default function PaginaSubida() {
                   )}
 
                   {/* Naviera */}
-                  {modoCompleto && carpetas.length > 0 && (
+                  {modoCompleto && (
                     <div className={styles.field}>
                       <label className={styles.label}><IconoBarco /> Naviera <span className={styles.req}>*</span></label>
-                      <select
-                        className={styles.select}
-                        value={carpetaId}
-                        onChange={e => setCarpetaId(e.target.value === "" ? "" : Number(e.target.value))}
+                      <input
+                        className={styles.input}
+                        type="text"
+                        value={naviera}
+                        onChange={(e) => setNaviera(e.target.value)}
+                        placeholder="Ej: Naviera del Pacífico S.A."
+                        maxLength={255}
                         required
-                      >
-                          <option value="">— Selecciona una naviera —</option>
-                        {navierasFiltradas.map(c => (
-                          <option key={c.id} value={c.id}>{c.nombre}</option>
-                        ))}
-                      </select>
+                      />
                     </div>
                   )}
 

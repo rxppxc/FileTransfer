@@ -116,19 +116,11 @@
   margin-bottom: 20px;
 }
 
-/* ─── Two-col layout ─── */
-.twoCol {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
-}
-@media (max-width: 760px) { .twoCol { grid-template-columns: 1fr; } }
-
 .col {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  max-width: 560px;
 }
 
 /* ─── Mini gráfica comparativa (arriba de cada panel) ─── */

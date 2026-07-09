@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
-from sqlalchemy.orm import selectinload
 from ldap3.core.exceptions import LDAPException
 from app.infrastructure.database import obtener_sesion_bd
 from app.core.security import obtener_id_usuario_actual
@@ -12,12 +11,10 @@ from app.core.permisos import es_admin_efectivo, requerir_algun_permiso
 from app.core.ldap import servicio_ldap
 from app.domain.models.user import Usuario, EstadoUsuario
 from app.domain.models.transfer import Transferencia, ArchivoTransferencia, EstadoTransferencia
-from app.domain.models.carpeta import Carpeta
 from app.domain.models.puerto import Puerto
 from app.domain.models.rol import Rol, Permiso, RolPermiso
 from app.domain.repositories.user_repository import RepositorioUsuario
 from app.domain.schemas.user import SalidaUsuario, DatosCrearUsuario, DatosCambiarEstado
-from app.domain.schemas.carpeta import SalidaCarpeta, DatosCrearCarpeta
 from app.domain.schemas.puerto import SalidaPuerto, DatosCrearPuerto
 from app.domain.schemas.rol import (
     SalidaPermiso, DatosCrearPermiso, DatosActualizarPermiso,
@@ -144,14 +141,20 @@ async def listar_puertos(
     _: int = Depends(requerir_admin),
     sesion: AsyncSession = Depends(obtener_sesion_bd),
 ):
-    resultado = await sesion.execute(
-        select(Puerto).options(selectinload(Puerto.carpetas)).order_by(Puerto.nombre)
-    )
+    resultado = await sesion.execute(select(Puerto).order_by(Puerto.nombre))
     puertos = resultado.scalars().all()
+
+    conteo_q = await sesion.execute(
+        select(Transferencia.puerto_id, func.count(Transferencia.id))
+        .where(Transferencia.status != EstadoTransferencia.ELIMINADA)
+        .group_by(Transferencia.puerto_id)
+    )
+    conteos = dict(conteo_q.all())
+
     salida = []
     for p in puertos:
         sp = SalidaPuerto.model_validate(p)
-        sp.total = len(p.carpetas)
+        sp.total = conteos.get(p.id, 0)
         salida.append(sp)
     return salida
 
@@ -185,58 +188,6 @@ async def eliminar_puerto(
     if not puerto:
         raise HTTPException(status_code=404, detail="Puerto no encontrado.")
     await sesion.delete(puerto)
-
-
-# ── Carpetas (navieras) ───────────────────────────────────────────────────────
-
-@enrutador.get("/carpetas", response_model=list[SalidaCarpeta])
-async def listar_carpetas(
-    _: int = Depends(requerir_admin),
-    sesion: AsyncSession = Depends(obtener_sesion_bd),
-):
-    resultado = await sesion.execute(
-        select(Carpeta)
-        .options(selectinload(Carpeta.transferencias), selectinload(Carpeta.puerto))
-        .order_by(Carpeta.nombre)
-    )
-    carpetas = resultado.scalars().all()
-    salida = []
-    for c in carpetas:
-        sc = SalidaCarpeta.model_validate(c)
-        sc.total = len(c.transferencias)
-        salida.append(sc)
-    return salida
-
-
-@enrutador.post("/carpetas", response_model=SalidaCarpeta, status_code=201)
-async def crear_carpeta(
-    datos: DatosCrearCarpeta,
-    _: int = Depends(requerir_admin),
-    sesion: AsyncSession = Depends(obtener_sesion_bd),
-):
-    existente = await sesion.execute(select(Carpeta).where(Carpeta.nombre == datos.nombre))
-    if existente.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Ya existe una carpeta con ese nombre.")
-    carpeta = Carpeta(nombre=datos.nombre, descripcion=datos.descripcion, puerto_id=datos.puerto_id)
-    sesion.add(carpeta)
-    await sesion.flush()
-    await sesion.refresh(carpeta, ["puerto"])
-    sc = SalidaCarpeta.model_validate(carpeta)
-    sc.total = 0
-    return sc
-
-
-@enrutador.delete("/carpetas/{carpeta_id}", status_code=204)
-async def eliminar_carpeta(
-    carpeta_id: int,
-    _: int = Depends(requerir_admin),
-    sesion: AsyncSession = Depends(obtener_sesion_bd),
-):
-    resultado = await sesion.execute(select(Carpeta).where(Carpeta.id == carpeta_id))
-    carpeta = resultado.scalar_one_or_none()
-    if not carpeta:
-        raise HTTPException(status_code=404, detail="Carpeta no encontrada.")
-    await sesion.delete(carpeta)
 
 
 # ── Permisos ──────────────────────────────────────────────────────────────────
@@ -558,22 +509,20 @@ async def obtener_estadisticas(
         for row in uploader_q.all()
     ]
 
-    # Carpetas con conteos
-    carpeta_q = await sesion.execute(
-        select(Carpeta).options(selectinload(Carpeta.transferencias)).order_by(Carpeta.nombre)
-    )
-    carpetas_stats = [
-        {"id": c.id, "nombre": c.nombre, "total": len(c.transferencias), "puerto_id": c.puerto_id}
-        for c in carpeta_q.scalars().all()
-    ]
+    # Puertos con conteo de transferencias
+    puerto_q = await sesion.execute(select(Puerto).order_by(Puerto.nombre))
+    puertos = list(puerto_q.scalars().all())
 
-    # Puertos con conteo de navieras
-    puerto_q = await sesion.execute(
-        select(Puerto).options(selectinload(Puerto.carpetas)).order_by(Puerto.nombre)
+    conteo_q = await sesion.execute(
+        select(Transferencia.puerto_id, func.count(Transferencia.id))
+        .where(no_eliminada)
+        .group_by(Transferencia.puerto_id)
     )
+    conteos = dict(conteo_q.all())
+
     puertos_stats = [
-        {"id": p.id, "nombre": p.nombre, "total": len(p.carpetas)}
-        for p in puerto_q.scalars().all()
+        {"id": p.id, "nombre": p.nombre, "total": conteos.get(p.id, 0)}
+        for p in puertos
     ]
 
     return {
@@ -583,7 +532,6 @@ async def obtener_estadisticas(
         "expiradas":            expiradas,
         "total_descargas":      total_descargas,
         "storage_bytes":        total_storage,
-        "carpetas":             carpetas_stats,
         "puertos":              puertos_stats,
         "top_uploaders":        top_uploaders,
     }

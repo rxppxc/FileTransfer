@@ -25,14 +25,6 @@ class SalidaPuertoBasico(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class SalidaCarpetaBasica(BaseModel):
-    id:        int
-    nombre:    str
-    puerto_id: int | None = None
-    puerto:    SalidaPuertoBasico | None = None
-    model_config = {"from_attributes": True}
-
-
 class SalidaTransferencia(BaseModel):
     id:            int
     token:         str
@@ -47,11 +39,10 @@ class SalidaTransferencia(BaseModel):
     files:         list[SalidaArchivoTransferencia] = []
     total_size:    int
     is_expired:    bool
-    carpeta_id:    int | None = None
-    carpeta:       SalidaCarpetaBasica | None = None
     puerto_id:     int | None = None
     puerto:        SalidaPuertoBasico | None = None
     marino:        str | None = None
+    naviera:       str | None = None
     user_id:       int
     titulo_original:       str | None = None
     mensaje_original:      str | None = None
@@ -66,9 +57,9 @@ class DatosCrearTransferencia(BaseModel):
     recipient:     str
     message:       str | None = None
     max_downloads: int | None = None
-    carpeta_id:    int | None = None
     puerto_id:     int | None = None
     marino:        str | None = None
+    naviera:       str | None = None
 
     @field_validator("title")
     @classmethod
@@ -111,6 +102,15 @@ class DatosCrearTransferencia(BaseModel):
             v = v.strip()
             if len(v) > 255:
                 raise ValueError("El nombre del marino no puede superar 255 caracteres.")
+        return v or None
+
+    @field_validator("naviera")
+    @classmethod
+    def validar_naviera(cls, v: str | None) -> str | None:
+        if v is not None:
+            v = v.strip()
+            if len(v) > 255:
+                raise ValueError("El nombre de la naviera no puede superar 255 caracteres.")
         return v or None
 
 
@@ -157,9 +157,9 @@ class DatosProcesarTransferencia(BaseModel):
     message:       str | None = None
     recipient:     str | None = None
     max_downloads: int | None = None
-    carpeta_id:    int | None = None
     puerto_id:     int | None = None
     marino:        str | None = None
+    naviera:       str | None = None
     observaciones: str | None = None
 
     @field_validator("title")

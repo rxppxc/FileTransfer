@@ -3,7 +3,6 @@ from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile, File, Form,
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from typing import Optional
 
 from app.infrastructure.database import obtener_sesion_bd
@@ -11,14 +10,12 @@ from app.domain.repositories.user_repository import RepositorioUsuario
 from app.domain.repositories.transfer_repository import RepositorioTransferencia
 from app.domain.repositories.audit_repository import RepositorioAuditoria
 from app.domain.models.audit_log import AccionAuditoria
-from app.domain.models.carpeta import Carpeta
 from app.domain.models.puerto import Puerto
 from app.domain.services.transfer_service import ServicioTransferencia
 from app.domain.schemas.transfer import (
     DatosCrearTransferencia, DatosCrearBorrador, DatosProcesarTransferencia, DatosReenviar,
     DatosDevolver, SalidaTransferencia, RespuestaTransferenciaPublica,
 )
-from app.domain.schemas.carpeta import SalidaCarpeta
 from app.domain.models.user import Usuario
 from app.core.security import obtener_id_usuario_actual
 from app.core.permisos import requerir_permiso, requerir_algun_permiso, usuario_tiene_permiso, es_admin_efectivo
@@ -44,24 +41,6 @@ async def _obtener_usuario_actual(
     if not usuario:
         raise HTTPException(status_code=401, detail="Usuario no encontrado.")
     return usuario
-
-
-@enrutador.get("/carpetas", response_model=list[SalidaCarpeta])
-async def listar_carpetas_publico(
-    _: Usuario = Depends(_obtener_usuario_actual),
-    sesion: AsyncSession = Depends(obtener_sesion_bd),
-):
-    """Lista todas las carpetas/navieras con su puerto — accesible por cualquier usuario autenticado."""
-    resultado = await sesion.execute(
-        select(Carpeta).options(selectinload(Carpeta.puerto)).order_by(Carpeta.nombre)
-    )
-    carpetas = resultado.scalars().all()
-    salida = []
-    for c in carpetas:
-        sc = SalidaCarpeta.model_validate(c)
-        sc.total = 0
-        salida.append(sc)
-    return salida
 
 
 @enrutador.get("/puertos")
@@ -92,9 +71,9 @@ async def crear_transferencia(
     message:       Optional[str]    = Form(None),
     recipient:     Optional[str]    = Form(None),
     max_downloads: Optional[int]    = Form(None),
-    carpeta_id:    Optional[int]    = Form(None),
     puerto_id:     Optional[int]    = Form(None),
     marino:        Optional[str]    = Form(None),
+    naviera:       Optional[str]    = Form(None),
     usuario: Usuario = Depends(_obtener_usuario_actual),
     _perm:   int     = Depends(requerir_permiso("T-CREAR-COMPLETA")),
     svc: ServicioTransferencia = Depends(_obtener_servicio),
@@ -103,7 +82,7 @@ async def crear_transferencia(
     datos = DatosCrearTransferencia(
         title=title, message=message, recipient=recipient,
         max_downloads=max_downloads,
-        carpeta_id=carpeta_id, puerto_id=puerto_id, marino=marino,
+        puerto_id=puerto_id, marino=marino, naviera=naviera,
     )
     resultado = await svc.crear(usuario.id, datos, files)
 
@@ -115,6 +94,7 @@ async def crear_transferencia(
             "titulo":       resultado.title,
             "destinatario": resultado.recipient,
             "marino":       resultado.marino,
+            "naviera":      resultado.naviera,
             "archivos":     [f.original_name for f in resultado.files],
             "expira_en":    resultado.expires_at.isoformat() if resultado.expires_at else None,
         },

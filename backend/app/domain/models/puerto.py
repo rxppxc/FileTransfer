@@ -6,7 +6,6 @@ from datetime import datetime
 import typing
 
 if typing.TYPE_CHECKING:
-    from app.domain.models.carpeta import Carpeta
     from app.domain.models.user import Usuario
 
 
@@ -17,8 +16,6 @@ class Puerto(Base):
     nombre:      Mapped[str]      = mapped_column(String(255), nullable=False, unique=True)
     descripcion: Mapped[str|None] = mapped_column(Text)
     created_at:  Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    carpetas: Mapped[list["Carpeta"]] = relationship("Carpeta", back_populates="puerto")
 
     # Operadores del muelle que tienen este puerto asignado
     operadores: Mapped[list["Usuario"]] = relationship(

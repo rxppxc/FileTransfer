@@ -233,7 +233,7 @@ function TransferCard({
 // ── Agrupación Puerto → Naviera → Marino ──────────────────────────────────────
 
 type MarinoGroup  = { nombre: string; items: Transferencia[] };
-type NavieraGroup = { id: number; nombre: string; marinos: MarinoGroup[] };
+type NavieraGroup = { nombre: string; marinos: MarinoGroup[] };
 type PuertoGroup  = { id: number | null; nombre: string; navieras: NavieraGroup[] };
 
 function agrupar(activas: Transferencia[]): { grupos: PuertoGroup[]; sinNaviera: Transferencia[] } {
@@ -241,7 +241,8 @@ function agrupar(activas: Transferencia[]): { grupos: PuertoGroup[]; sinNaviera:
   const sinNaviera: Transferencia[] = [];
 
   for (const t of activas) {
-    if (!t.carpeta) {
+    const navieraNombre = t.naviera?.trim();
+    if (!navieraNombre) {
       sinNaviera.push(t);
       continue;
     }
@@ -253,9 +254,9 @@ function agrupar(activas: Transferencia[]): { grupos: PuertoGroup[]; sinNaviera:
     }
     const puertoGroup = puertoMap.get(puertoId)!;
 
-    let navieraGroup = puertoGroup.navieras.find(n => n.id === t.carpeta!.id);
+    let navieraGroup = puertoGroup.navieras.find(n => n.nombre === navieraNombre);
     if (!navieraGroup) {
-      navieraGroup = { id: t.carpeta.id, nombre: t.carpeta.nombre, marinos: [] };
+      navieraGroup = { nombre: navieraNombre, marinos: [] };
       puertoGroup.navieras.push(navieraGroup);
     }
 
@@ -431,7 +432,7 @@ export default function PaginaPanel() {
   const activasFiltradas = busquedaNorm
     ? activas.filter(t =>
         (t.title || "").toLowerCase().includes(busquedaNorm) ||
-        (t.carpeta?.nombre || "").toLowerCase().includes(busquedaNorm) ||
+        (t.naviera || "").toLowerCase().includes(busquedaNorm) ||
         (t.marino || "").toLowerCase().includes(busquedaNorm) ||
         (t.puerto?.nombre || "").toLowerCase().includes(busquedaNorm)
       )
@@ -654,7 +655,7 @@ export default function PaginaPanel() {
                   </div>
 
                   {isPuertoOpen && pg.navieras.map(ng => {
-                    const navieraKey = String(ng.id);
+                    const navieraKey = `${puertoKey}-${ng.nombre}`;
                     const isNavieraOpen = navieraAbiertos.has(navieraKey);
                     return (
                       <div key={navieraKey} className={styles.navieraGroup}>
@@ -674,7 +675,7 @@ export default function PaginaPanel() {
                         </div>
 
                         {isNavieraOpen && ng.marinos.map(mg => {
-                          const marinoKey = `${ng.id}-${mg.nombre}`;
+                          const marinoKey = `${navieraKey}-${mg.nombre}`;
                           const isMarinoOpen = marinoAbiertos.has(marinoKey);
                           return (
                             <div key={marinoKey} className={styles.marinoGroup}>

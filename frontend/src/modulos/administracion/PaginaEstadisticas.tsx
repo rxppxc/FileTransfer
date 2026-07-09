@@ -7,7 +7,7 @@ import BarraProgreso from "../../components/BarraProgreso";
 import RankingBarras from "../../components/RankingBarras";
 import {
   IconoUsuario, IconoGrafico, IconoActividad, IconoDescargar,
-  IconoDisco, IconoCarpeta, IconoAncla, IconoReloj, IconoTrofeo,
+  IconoDisco, IconoAncla, IconoReloj, IconoTrofeo,
 } from "../../components/Iconos";
 import styles from "./PaginaEstadisticas.module.css";
 
@@ -63,15 +63,8 @@ export default function PaginaEstadisticas() {
             <div className={styles.loading}><span className={styles.spinner} /> Cargando estadísticas…</div>
           ) : stats && (() => {
             const maxSubidores = Math.max(...stats.top_uploaders.map(u => u.total), 1);
-            // Transferencias por puerto = suma de las transferencias de las navieras
-            // asignadas a ese puerto. Se deriva de datos que /admin/stats ya trae
-            // (carpetas[].total y carpetas[].puerto_id) — no requiere otro endpoint.
             const puertosActivos = stats.puertos
-              .map(p => ({
-                id: p.id,
-                nombre: p.nombre,
-                valor: stats.carpetas.filter(c => c.puerto_id === p.id).reduce((s, c) => s + c.total, 0),
-              }))
+              .map(p => ({ id: p.id, nombre: p.nombre, valor: p.total }))
               .sort((a, b) => b.valor - a.valor);
 
             return (
@@ -107,11 +100,6 @@ export default function PaginaEstadisticas() {
                     <div className={`${styles.statIcon} ${styles.orange}`}><IconoAncla tamano={16} /></div>
                     <div className={styles.statNum}>{stats.puertos.length}</div>
                     <div className={styles.statLabel}>Puertos</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <div className={`${styles.statIcon} ${styles.teal}`}><IconoCarpeta /></div>
-                    <div className={styles.statNum}>{stats.carpetas.length}</div>
-                    <div className={styles.statLabel}>Navieras</div>
                   </div>
                   <div className={styles.statCard}>
                     <div className={`${styles.statIcon} ${styles.gray}`}><IconoUsuario /></div>
@@ -157,7 +145,7 @@ export default function PaginaEstadisticas() {
                     </div>
                   </section>
 
-                  {/* ── Puertos más activos (por transferencias de sus navieras) ── */}
+                  {/* ── Puertos más activos ── */}
                   <section className={styles.panel}>
                     <div className={styles.panelHeader}>
                       <IconoAncla />

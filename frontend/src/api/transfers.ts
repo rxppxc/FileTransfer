@@ -1,14 +1,11 @@
 import { clienteApi, URL_BASE_API } from "./client";
-import type { Transferencia, TransferenciaPublica, Carpeta } from "../types";
+import type { Transferencia, TransferenciaPublica } from "../types";
 
 interface PuertoPublico { id: number; nombre: string; }
 
 export const apiTransferencias = {
   listar: () =>
     clienteApi.get<Transferencia[]>("/transfers/").then((r) => r.data),
-
-  listarCarpetas: () =>
-    clienteApi.get<Carpeta[]>("/transfers/carpetas").then((r) => r.data),
 
   listarPuertos: () =>
     clienteApi.get<PuertoPublico[]>("/transfers/puertos").then((r) => r.data),
@@ -48,7 +45,7 @@ export const apiTransferencias = {
   procesar: (id: number, datos: {
     title?: string; message?: string; recipient?: string;
     max_downloads?: number;
-    carpeta_id?: number | null; puerto_id?: number | null; marino?: string | null;
+    puerto_id?: number | null; marino?: string | null; naviera?: string | null;
     observaciones?: string | null;
   }) =>
     clienteApi.patch<Transferencia>(`/transfers/by-id/${id}/procesar`, datos).then((r) => r.data),

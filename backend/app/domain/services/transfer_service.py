@@ -171,21 +171,14 @@ class ServicioTransferencia:
         self.repo = repo
 
     async def _validar_referencias(
-        self, carpeta_id: int | None, puerto_id: int | None,
+        self, puerto_id: int | None,
     ) -> None:
         """Valida que las FKs existan antes de cualquier insert/update.
         Lanza HTTPException 400 con un mensaje claro en lugar de dejar que el
         driver de BD devuelva un IntegrityError críptico."""
-        from app.domain.models.carpeta import Carpeta
         from app.domain.models.puerto import Puerto
         from sqlalchemy import select as _select
 
-        if carpeta_id is not None:
-            existe = await self.repo.sesion.execute(
-                _select(Carpeta.id).where(Carpeta.id == carpeta_id).limit(1)
-            )
-            if not existe.scalar_one_or_none():
-                raise HTTPException(status_code=400, detail="La naviera seleccionada no existe.")
         if puerto_id is not None:
             existe = await self.repo.sesion.execute(
                 _select(Puerto.id).where(Puerto.id == puerto_id).limit(1)
@@ -252,7 +245,7 @@ class ServicioTransferencia:
                 detail="Debes adjuntar al menos un archivo.",
             )
 
-        await self._validar_referencias(datos.carpeta_id, datos.puerto_id)
+        await self._validar_referencias(datos.puerto_id)
 
         token   = secrets.token_urlsafe(36)
         destino = Path(configuracion.STORAGE_PATH) / token
@@ -267,9 +260,9 @@ class ServicioTransferencia:
             expires_at    = _expira_a_medianoche(configuracion.TRANSFER_EXPIRY_DAYS),
             max_downloads = datos.max_downloads,
             status        = EstadoTransferencia.ACTIVA.value,
-            carpeta_id    = datos.carpeta_id,
             puerto_id     = datos.puerto_id,
             marino        = datos.marino,
+            naviera       = datos.naviera,
             titulo_original       = datos.title,
             mensaje_original      = datos.message,
             destinatario_original = datos.recipient,
@@ -328,15 +321,15 @@ class ServicioTransferencia:
         if transferencia.status not in estados_editables:
             raise HTTPException(status_code=400, detail="No se puede editar una transferencia en este estado.")
 
-        await self._validar_referencias(datos.carpeta_id, datos.puerto_id)
+        await self._validar_referencias(datos.puerto_id)
 
         if datos.title         is not None: transferencia.title         = datos.title
         if datos.message       is not None: transferencia.message       = datos.message
         if datos.recipient     is not None: transferencia.recipient     = datos.recipient
         if datos.max_downloads is not None: transferencia.max_downloads = datos.max_downloads
-        if datos.carpeta_id    is not None: transferencia.carpeta_id    = datos.carpeta_id
         if datos.puerto_id     is not None: transferencia.puerto_id     = datos.puerto_id
         if datos.marino        is not None: transferencia.marino        = datos.marino
+        if datos.naviera       is not None: transferencia.naviera       = datos.naviera
         if datos.observaciones is not None: transferencia.observaciones = datos.observaciones
 
         await self.repo.guardar(transferencia)

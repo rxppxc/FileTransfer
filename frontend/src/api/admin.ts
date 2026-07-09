@@ -1,5 +1,5 @@
 import { clienteApi } from "./client";
-import type { Carpeta, Puerto } from "../types";
+import type { Puerto } from "../types";
 
 export interface UsuarioAD {
   dn: string;
@@ -56,7 +56,6 @@ export interface StatsAdmin {
   expiradas:       number;
   total_descargas: number;
   storage_bytes:   number;
-  carpetas:        { id: number; nombre: string; total: number; puerto_id: number | null }[];
   puertos:         { id: number; nombre: string; total: number }[];
   top_uploaders:   { id: number; full_name: string; total: number }[];
 }
@@ -86,16 +85,6 @@ export const apiAdmin = {
 
   eliminarPuerto: (id: number) =>
     clienteApi.delete(`/admin/puertos/${id}`),
-
-  // Carpetas
-  listarCarpetas: () =>
-    clienteApi.get<Carpeta[]>("/admin/carpetas"),
-
-  crearCarpeta: (nombre: string, descripcion?: string, puerto_id?: number) =>
-    clienteApi.post<Carpeta>("/admin/carpetas", { nombre, descripcion, puerto_id }),
-
-  eliminarCarpeta: (id: number) =>
-    clienteApi.delete(`/admin/carpetas/${id}`),
 
   // Stats
   obtenerStats: () =>

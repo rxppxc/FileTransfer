@@ -46,16 +46,6 @@ export interface Puerto {
   total:       number;
 }
 
-export interface Carpeta {
-  id:          number;
-  nombre:      string;
-  descripcion: string | null;
-  created_at:  string;
-  total:       number;
-  puerto_id:   number | null;
-  puerto:      { id: number; nombre: string } | null;
-}
-
 export interface Transferencia {
   id:            number;
   token:         string;
@@ -70,11 +60,10 @@ export interface Transferencia {
   files:         ArchivoTransferencia[];
   total_size:    number;
   is_expired:    boolean;
-  carpeta_id:    number | null;
-  carpeta:       { id: number; nombre: string } | null;
   puerto_id:     number | null;
   puerto:        { id: number; nombre: string } | null;
   marino:        string | null;
+  naviera:       string | null;
   user_id?:      number;
   titulo_original?:       string | null;
   mensaje_original?:      string | null;

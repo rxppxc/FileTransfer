@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiTransferencias } from "../../api/transfers";
-import type { Transferencia, Carpeta } from "../../types";
+import type { Transferencia } from "../../types";
 import { formatBytes } from "../../utils/format";
 import { useConfirmar } from "../../components/ModalConfirmacion";
 import { MenuCabecera } from "../../components/MenuCabecera";
@@ -26,7 +26,6 @@ export default function PaginaEditarTransferencia() {
 
   const [t, setT] = useState<Transferencia | null>(null);
   const [puertos, setPuertos] = useState<{ id: number; nombre: string }[]>([]);
-  const [carpetas, setCarpetas] = useState<Carpeta[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +36,7 @@ export default function PaginaEditarTransferencia() {
   const [mensaje, setMensaje] = useState("");
   const [destinatario, setDestinatario] = useState("");
   const [puertoId, setPuertoId] = useState<number | "">("");
-  const [carpetaId, setCarpetaId] = useState<number | "">("");
+  const [naviera, setNaviera] = useState("");
   const [marino, setMarino] = useState("");
   const [observaciones, setObservaciones] = useState("");
 
@@ -66,7 +65,7 @@ export default function PaginaEditarTransferencia() {
     setMensaje(tr.message ?? "");
     setDestinatario(tr.recipient ?? "");
     setPuertoId(tr.puerto_id ?? "");
-    setCarpetaId(tr.carpeta_id ?? "");
+    setNaviera(tr.naviera ?? "");
     setMarino(tr.marino ?? "");
     setObservaciones(tr.observaciones ?? "");
   }, []);
@@ -75,14 +74,13 @@ export default function PaginaEditarTransferencia() {
     if (!id || Number.isNaN(id)) {
       setError("ID inválido."); setCargando(false); return;
     }
-    // Cargas paralelas con tolerancia a fallos parciales: si los catálogos
-    // (puertos/navieras) fallan podemos seguir mostrando la transferencia con
-    // los datos que ya tenía guardados; solo la carga principal es crítica.
+    // Cargas paralelas con tolerancia a fallos parciales: si el catálogo de
+    // puertos falla podemos seguir mostrando la transferencia con los datos
+    // que ya tenía guardados; solo la carga principal es crítica.
     Promise.allSettled([
       apiTransferencias.obtenerPorId(id),
       apiTransferencias.listarPuertos(),
-      apiTransferencias.listarCarpetas(),
-    ]).then(([resTr, resPts, resCrs]) => {
+    ]).then(([resTr, resPts]) => {
       if (resTr.status === "rejected") {
         const detalle = (resTr.reason as any)?.response?.data?.detail
                         ?? "No se pudo cargar la transferencia.";
@@ -91,7 +89,6 @@ export default function PaginaEditarTransferencia() {
       }
       aplicarTransferencia(resTr.value);
       if (resPts.status === "fulfilled") setPuertos(resPts.value);
-      if (resCrs.status === "fulfilled") setCarpetas(resCrs.value);
     }).finally(() => setCargando(false));
   }, [id, aplicarTransferencia]);
 
@@ -104,7 +101,7 @@ export default function PaginaEditarTransferencia() {
         message: mensaje.trim() || "",
         recipient: destinatario.trim() || "",
         puerto_id: puertoId === "" ? null : puertoId,
-        carpeta_id: carpetaId === "" ? null : carpetaId,
+        naviera: naviera.trim() || "",
         marino: marino.trim() || "",
         observaciones: observaciones.trim() || null,
       });
@@ -124,7 +121,7 @@ export default function PaginaEditarTransferencia() {
     if (!dest) {
       notificar("Define un destinatario antes de reenviar.", "err"); return;
     }
-    if (!puertoId || !carpetaId || !marino.trim()) {
+    if (!puertoId || !naviera.trim() || !marino.trim()) {
       notificar("Completa puerto, naviera y marino antes de reenviar.", "err"); return;
     }
     const destOriginal = (t.recipient ?? "").trim();
@@ -140,14 +137,14 @@ export default function PaginaEditarTransferencia() {
 
     setReenviando(true);
     try {
-      // En este punto el guard previo garantiza que puertoId y carpetaId son
-      // números > 0 (no la cadena vacía), así que el cast es seguro.
+      // En este punto el guard previo garantiza que puertoId es un número > 0
+      // (no la cadena vacía), así que el cast es seguro.
       await apiTransferencias.procesar(id, {
         title: titulo.trim() || undefined,
         message: mensaje.trim() || "",
         recipient: destinatario.trim(),
         puerto_id: puertoId as number,
-        carpeta_id: carpetaId as number,
+        naviera: naviera.trim(),
         marino: marino.trim(),
       });
       await apiTransferencias.reenviar(id, {
@@ -254,7 +251,7 @@ export default function PaginaEditarTransferencia() {
     mensaje !== (t.message ?? "") ||
     destinatario !== (t.recipient ?? "") ||
     (puertoId === "" ? null : puertoId) !== (t.puerto_id ?? null) ||
-    (carpetaId === "" ? null : carpetaId) !== (t.carpeta_id ?? null) ||
+    naviera !== (t.naviera ?? "") ||
     marino !== (t.marino ?? "")
   );
 
@@ -385,14 +382,13 @@ export default function PaginaEditarTransferencia() {
                   </div>
                   <div className={styles.field}>
                     <label>Naviera</label>
-                    <select
-                      className={styles.select}
-                      value={carpetaId}
-                      onChange={e => setCarpetaId(e.target.value === "" ? "" : Number(e.target.value))}
-                    >
-                      <option value="">— Selecciona —</option>
-                      {carpetas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                    </select>
+                    <input
+                      className={styles.input}
+                      value={naviera}
+                      onChange={e => setNaviera(e.target.value)}
+                      placeholder="Nombre de la naviera"
+                      maxLength={255}
+                    />
                   </div>
                   <div className={styles.fieldFull}>
                     <label>Marino / motonave</label>
