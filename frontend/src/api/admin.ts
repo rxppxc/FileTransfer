@@ -49,6 +49,15 @@ export interface Rol {
   total_usuarios: number;
 }
 
+export interface DatosUsuarioLocal {
+  username: string;
+  password: string;
+  name?: string;
+  last_name?: string;
+  email?: string;
+  rol_id?: number | null;
+}
+
 export interface StatsAdmin {
   usuarios:        number;
   transferencias:  number;
@@ -69,6 +78,10 @@ export const apiAdmin = {
 
   crearUsuario: (username: string) =>
     clienteApi.post<UsuarioSistema>("/admin/usuarios", { username }),
+
+  // Usuario local de prueba (sin AD) — solo disponible fuera de producción.
+  crearUsuarioLocal: (datos: DatosUsuarioLocal) =>
+    clienteApi.post<UsuarioSistema>("/admin/usuarios/local", datos),
 
   cambiarEstado: (id: number, status: "active" | "inactive") =>
     clienteApi.patch<UsuarioSistema>(`/admin/usuarios/${id}/estado`, { status }),

@@ -2,13 +2,15 @@ import asyncio
 import logging
 from fastapi import HTTPException, status
 from ldap3.core.exceptions import LDAPException
+from app.core.config import obtener_configuracion
 from app.core.ldap import servicio_ldap
-from app.core.security import crear_token_acceso
-from app.domain.models.user import EstadoUsuario
+from app.core.security import crear_token_acceso, verificar_password
+from app.domain.models.user import EstadoUsuario, TipoUsuario
 from app.domain.repositories.user_repository import RepositorioUsuario
 from app.domain.schemas.user import RespuestaToken, SalidaUsuario
 
-logger = logging.getLogger(__name__)
+logger        = logging.getLogger(__name__)
+configuracion = obtener_configuracion()
 
 
 class ServicioAutenticacion:
@@ -16,6 +18,29 @@ class ServicioAutenticacion:
         self.repo_usuario = repo_usuario
 
     async def login(self, nombre_usuario: str, contrasena: str) -> RespuestaToken:
+        # Atajo SOLO fuera de producción: usuarios locales de prueba (creados
+        # desde /admin/usuarios/local) se autentican por contraseña propia,
+        # sin pasar por LDAP. Se elimina junto con ese endpoint y el campo
+        # password_hash antes de pasar el sistema a producción.
+        if not configuracion.es_produccion:
+            usuario_local = await self.repo_usuario.buscar_por_nombre_usuario(nombre_usuario)
+            if usuario_local and usuario_local.user_type == TipoUsuario.LOCAL:
+                if not usuario_local.password_hash or not verificar_password(contrasena, usuario_local.password_hash):
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Contraseña incorrecta. Verifica tus credenciales.",
+                    )
+                if usuario_local.status != EstadoUsuario.ACTIVO:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Tu cuenta está deshabilitada. Contacta al administrador de TI.",
+                    )
+                token = crear_token_acceso(subject=usuario_local.id, extra={"username": usuario_local.username})
+                return RespuestaToken(
+                    access_token=token,
+                    user=SalidaUsuario.model_validate(usuario_local),
+                )
+
         # 1. Buscar en Active Directory
         try:
             ldap_usuario = await asyncio.to_thread(

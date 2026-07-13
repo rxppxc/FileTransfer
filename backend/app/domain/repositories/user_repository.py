@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.domain.models.user import Usuario, EstadoUsuario
+from app.domain.models.user import Usuario, EstadoUsuario, TipoUsuario
 
 
 class RepositorioUsuario:
@@ -28,6 +28,25 @@ class RepositorioUsuario:
             last_name = datos_ldap.get("last_name") or None,
             email     = datos_ldap.get("email")     or None,
             guid      = datos_ldap.get("guid")      or None,
+        )
+        self.sesion.add(usuario)
+        await self.sesion.flush()
+        await self.sesion.refresh(usuario)
+        return usuario
+
+    async def crear_local(
+        self, username: str, password_hash: str,
+        name: str | None, last_name: str | None, email: str | None, rol_id: int | None,
+    ) -> Usuario:
+        """Alta de un usuario LOCAL de prueba (sin AD) — ver DatosCrearUsuarioLocal."""
+        usuario = Usuario(
+            username      = username,
+            name          = name or None,
+            last_name     = last_name or None,
+            email         = email or None,
+            user_type     = TipoUsuario.LOCAL,
+            password_hash = password_hash,
+            rol_id        = rol_id,
         )
         self.sesion.add(usuario)
         await self.sesion.flush()

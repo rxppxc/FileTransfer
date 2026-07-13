@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from ldap3.core.exceptions import LDAPException
 from app.infrastructure.database import obtener_sesion_bd
-from app.core.security import obtener_id_usuario_actual
+from app.core.config import obtener_configuracion
+from app.core.security import obtener_id_usuario_actual, hashear_password
 from app.core.permisos import es_admin_efectivo, requerir_algun_permiso
 from app.core.ldap import servicio_ldap
 from app.domain.models.user import Usuario, EstadoUsuario
@@ -14,7 +15,7 @@ from app.domain.models.transfer import Transferencia, ArchivoTransferencia, Esta
 from app.domain.models.puerto import Puerto
 from app.domain.models.rol import Rol, Permiso, RolPermiso
 from app.domain.repositories.user_repository import RepositorioUsuario
-from app.domain.schemas.user import SalidaUsuario, DatosCrearUsuario, DatosCambiarEstado
+from app.domain.schemas.user import SalidaUsuario, DatosCrearUsuario, DatosCambiarEstado, DatosCrearUsuarioLocal
 from app.domain.schemas.puerto import SalidaPuerto, DatosCrearPuerto
 from app.domain.schemas.rol import (
     SalidaPermiso, DatosCrearPermiso, DatosActualizarPermiso,
@@ -22,8 +23,9 @@ from app.domain.schemas.rol import (
 )
 from app.domain.schemas.puerto import DatosAsignarPuertos, SalidaPuertoMini
 
-logger = logging.getLogger(__name__)
-enrutador = APIRouter(prefix="/admin", tags=["admin"])
+logger        = logging.getLogger(__name__)
+configuracion = obtener_configuracion()
+enrutador     = APIRouter(prefix="/admin", tags=["admin"])
 
 
 # ── Dependencia: solo administradores ────────────────────────────────────────
@@ -91,6 +93,43 @@ async def crear_usuario(
         raise HTTPException(status_code=409, detail="El usuario ya existe en el sistema.")
 
     return await repo.crear_desde_ldap(ldap_usuario)
+
+
+# ── Usuario local de prueba (sin AD, solo fuera de producción) ───────────────
+# Atajo temporal para probar roles/permisos sin depender de Active Directory.
+# Se elimina junto con la rama de login local antes de pasar a producción.
+
+@enrutador.post("/usuarios/local", response_model=SalidaUsuario, status_code=201)
+async def crear_usuario_local(
+    datos: DatosCrearUsuarioLocal,
+    _: int = Depends(requerir_admin),
+    sesion: AsyncSession = Depends(obtener_sesion_bd),
+):
+    if configuracion.es_produccion:
+        raise HTTPException(status_code=403, detail="No disponible en producción.")
+
+    repo = RepositorioUsuario(sesion)
+    existente = await repo.buscar_por_nombre_usuario(datos.username)
+    if existente:
+        raise HTTPException(status_code=409, detail="Ya existe un usuario con ese nombre.")
+
+    if datos.rol_id is not None:
+        rol_q = await sesion.execute(select(Rol).where(Rol.id == datos.rol_id))
+        if not rol_q.scalar_one_or_none():
+            raise HTTPException(status_code=404, detail="Rol no encontrado.")
+
+    usuario = await repo.crear_local(
+        username=datos.username,
+        password_hash=hashear_password(datos.password),
+        name=datos.name, last_name=datos.last_name, email=datos.email,
+        rol_id=datos.rol_id,
+    )
+    salida = SalidaUsuario.model_validate(usuario)
+    if usuario.rol_id is not None:
+        rol = (await sesion.execute(select(Rol).where(Rol.id == usuario.rol_id))).scalar_one_or_none()
+        if rol:
+            salida.rol_personalizado = RolMini.model_validate(rol)
+    return salida
 
 
 # ── Cambiar estado (activo / inactivo) ────────────────────────────────────────

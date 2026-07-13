@@ -7,7 +7,7 @@ import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import {
   IconoBuscar, IconoUsuario, IconoCorreo, IconoMaletin, IconoMas,
-  IconoCheck, IconoBasura, IconoPoder, IconoEscudo, IconoAncla, IconoMuelle,
+  IconoCheck, IconoBasura, IconoPoder, IconoEscudo, IconoAncla, IconoMuelle, IconoLlave,
 } from "../../components/Iconos";
 import styles from "./PaginaUsuarios.module.css";
 
@@ -107,6 +107,17 @@ export default function PaginaUsuarios() {
   const [editandoPuertos, setEditandoPuertos] = useState<number | null>(null);
   const [guardandoPuertos, setGuardandoPuertos] = useState(false);
 
+  // Usuario local de prueba (sin AD) — temporal, solo mientras no esté en producción.
+  const [mostrarLocal,   setMostrarLocal]   = useState(false);
+  const [localUsername,  setLocalUsername]  = useState("");
+  const [localPassword,  setLocalPassword]  = useState("");
+  const [localNombre,    setLocalNombre]    = useState("");
+  const [localApellido,  setLocalApellido]  = useState("");
+  const [localEmail,     setLocalEmail]     = useState("");
+  const [localRolId,     setLocalRolId]     = useState<number | "">("");
+  const [creandoLocal,   setCreandoLocal]   = useState(false);
+  const [errorLocal,     setErrorLocal]     = useState<string | null>(null);
+
   const cargarUsuarios = useCallback(async () => {
     try {
       const { data } = await apiAdmin.listarUsuarios();
@@ -192,6 +203,35 @@ export default function PaginaUsuarios() {
       mostrarToast(err?.response?.data?.detail ?? "Error al crear el usuario.", "error");
     } finally {
       setCreando(null);
+    }
+  }
+
+  async function alCrearLocal(e: React.FormEvent) {
+    e.preventDefault();
+    const username = localUsername.trim();
+    if (!username || localPassword.length < 4) {
+      setErrorLocal("Usuario y contraseña (mínimo 4 caracteres) son obligatorios.");
+      return;
+    }
+    setCreandoLocal(true);
+    setErrorLocal(null);
+    try {
+      await apiAdmin.crearUsuarioLocal({
+        username,
+        password: localPassword,
+        name: localNombre.trim() || undefined,
+        last_name: localApellido.trim() || undefined,
+        email: localEmail.trim() || undefined,
+        rol_id: localRolId !== "" ? localRolId : undefined,
+      });
+      setLocalUsername(""); setLocalPassword(""); setLocalNombre("");
+      setLocalApellido(""); setLocalEmail(""); setLocalRolId("");
+      await cargarUsuarios();
+      mostrarToast(`Usuario local ${username} creado.`, "exito");
+    } catch (err: any) {
+      setErrorLocal(err?.response?.data?.detail ?? "Error al crear el usuario local.");
+    } finally {
+      setCreandoLocal(false);
     }
   }
 
@@ -347,6 +387,88 @@ export default function PaginaUsuarios() {
                 </div>
               )}
             </div>
+          </section>
+
+          {/* Usuario local de prueba (temporal, sin AD) */}
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <IconoLlave />
+              Usuario de prueba (local, temporal)
+              <button
+                type="button"
+                className={styles.searchBtn}
+                style={{ marginLeft: "auto", padding: "6px 14px" }}
+                onClick={() => setMostrarLocal(v => !v)}
+              >
+                <IconoMas tamano={14} />
+                {mostrarLocal ? "Ocultar" : "Nuevo"}
+              </button>
+            </div>
+            {mostrarLocal && (
+              <div className={styles.panelBody}>
+                <p className={styles.searchError} style={{ marginTop: 0, marginBottom: 14 }}>
+                  Crea una cuenta con contraseña propia, sin pasar por Active Directory — solo para
+                  probar roles y permisos mientras el sistema está en fase de pruebas. Esta opción
+                  se elimina antes de pasar a producción.
+                </p>
+                <form onSubmit={alCrearLocal} className={styles.searchRow} style={{ flexWrap: "wrap" }}>
+                  <input
+                    className={styles.searchInput}
+                    style={{ minWidth: 140 }}
+                    placeholder="Usuario *"
+                    value={localUsername}
+                    onChange={e => setLocalUsername(e.target.value)}
+                    required
+                  />
+                  <input
+                    className={styles.searchInput}
+                    style={{ minWidth: 140 }}
+                    type="password"
+                    placeholder="Contraseña *"
+                    value={localPassword}
+                    onChange={e => setLocalPassword(e.target.value)}
+                    required
+                  />
+                  <input
+                    className={styles.searchInput}
+                    style={{ minWidth: 140 }}
+                    placeholder="Nombre"
+                    value={localNombre}
+                    onChange={e => setLocalNombre(e.target.value)}
+                  />
+                  <input
+                    className={styles.searchInput}
+                    style={{ minWidth: 140 }}
+                    placeholder="Apellido"
+                    value={localApellido}
+                    onChange={e => setLocalApellido(e.target.value)}
+                  />
+                  <input
+                    className={styles.searchInput}
+                    style={{ minWidth: 160 }}
+                    type="email"
+                    placeholder="Correo (opcional)"
+                    value={localEmail}
+                    onChange={e => setLocalEmail(e.target.value)}
+                  />
+                  <select
+                    className={styles.rolSelect}
+                    value={localRolId}
+                    onChange={e => setLocalRolId(e.target.value ? Number(e.target.value) : "")}
+                  >
+                    <option value="">— Sin rol —</option>
+                    {roles.map(r => (
+                      <option key={r.id} value={r.id}>{r.nombre}</option>
+                    ))}
+                  </select>
+                  <button type="submit" className={styles.searchBtn} disabled={creandoLocal}>
+                    {creandoLocal ? <span className={styles.spinner} /> : <IconoCheck tamano={14} />}
+                    {creandoLocal ? "Creando…" : "Crear"}
+                  </button>
+                </form>
+                {errorLocal && <p className={styles.searchError}>{errorLocal}</p>}
+              </div>
+            )}
           </section>
 
           {/* Users table */}

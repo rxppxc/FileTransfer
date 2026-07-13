@@ -10,6 +10,7 @@ seguridad sobre micro-optimización.
 """
 from datetime import datetime, timedelta, timezone
 from typing import Any
+import bcrypt
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -21,6 +22,20 @@ from app.domain.models.user import Usuario, EstadoUsuario
 
 configuracion  = obtener_configuracion()
 esquema_bearer = HTTPBearer(auto_error=True)
+
+
+# Solo para usuarios locales de prueba (user_type=LOCAL) — ver auth_service.py.
+# bcrypt directo (no passlib): passlib 1.7.4 no es compatible con bcrypt>=4.1
+# (falla su autodetección interna de un bug ya parcheado hace años).
+def hashear_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verificar_password(password: str, password_hash: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 def crear_token_acceso(subject: str | Any, extra: dict | None = None) -> str:

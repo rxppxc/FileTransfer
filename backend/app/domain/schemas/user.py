@@ -47,3 +47,30 @@ class DatosCrearUsuario(BaseModel):
 class DatosCambiarEstado(BaseModel):
     """Activar o desactivar la cuenta de un usuario."""
     status: EstadoUsuario
+
+
+class DatosCrearUsuarioLocal(BaseModel):
+    """Alta de un usuario LOCAL de prueba (sin Active Directory) — solo
+    disponible fuera de producción, para probar roles/permisos sin crear
+    cuentas reales en el AD. Ver ServicioAutenticacion.login."""
+    username:  str
+    password:  str
+    name:      str | None = None
+    last_name: str | None = None
+    email:     str | None = None
+    rol_id:    int | None = None
+
+    @field_validator("username")
+    @classmethod
+    def _v_username(cls, v: str) -> str:
+        v = (v or "").strip()
+        if not v:
+            raise ValueError("Se requiere el nombre de usuario.")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def _v_password(cls, v: str) -> str:
+        if not v or len(v) < 4:
+            raise ValueError("La contraseña debe tener al menos 4 caracteres.")
+        return v

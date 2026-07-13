@@ -40,6 +40,10 @@ class Usuario(Base):
     guid:      Mapped[str | None]    = mapped_column(String(100), unique=True)
     user_type: Mapped[TipoUsuario]   = mapped_column(SAEnum(TipoUsuario),  default=TipoUsuario.AD)
     status:    Mapped[EstadoUsuario] = mapped_column(SAEnum(EstadoUsuario), default=EstadoUsuario.ACTIVO)
+    # Solo se usa para usuarios user_type=LOCAL (cuentas de prueba sin AD,
+    # ver ServicioAutenticacion.login). Se elimina junto con ese flujo antes
+    # de pasar el sistema a producción.
+    password_hash: Mapped[str | None] = mapped_column(String(255))
     rol_id:    Mapped[int | None]    = mapped_column(
         ForeignKey("roles.id", ondelete="SET NULL"), nullable=True, index=True
     )
