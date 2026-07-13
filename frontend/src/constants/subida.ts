@@ -3,8 +3,8 @@
  * Mantener alineado con `MAX_FILE_SIZE_MB` del backend.
  */
 
-export const TAMANIO_MAX_BYTES = 100 * 1024 * 1024;  // 100 MB por archivo
-export const TAMANIO_MAX_MB    = 100;
+export const TAMANIO_MAX_BYTES = 50 * 1024 * 1024;  // 50 MB por archivo
+export const TAMANIO_MAX_MB    = 50;
 
 export const EXTENSION_PDF = ".pdf";
 export const TIPOS_ACEPTADOS_AMPLIO = [

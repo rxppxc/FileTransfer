@@ -20,7 +20,7 @@ const TIPOS_ACEPTADOS = [
 ].join(",");
 
 const TIPOS_PDF      = ".pdf";
-const MAX_BYTES      = 100 * 1024 * 1024; // 100 MB
+const MAX_BYTES      = 50 * 1024 * 1024; // 50 MB
 
 
 export default function PaginaSubida() {
@@ -64,7 +64,7 @@ export default function PaginaSubida() {
       }
       const superanTamanio = nuevos.filter(a => a.size > MAX_BYTES);
       if (superanTamanio.length) {
-        setError(`Los siguientes archivos superan el límite de 100 MB: ${superanTamanio.map(a => a.name).join(", ")}`);
+        setError(`Los siguientes archivos superan el límite de 50 MB: ${superanTamanio.map(a => a.name).join(", ")}`);
         return;
       }
     }
@@ -212,7 +212,7 @@ export default function PaginaSubida() {
                 <span className={styles.reqBadge}>Obligatorio</span>
               </div>
               {modoBasico && (
-                <p className={styles.panelHint}><strong>Obligatorio.</strong> Adjunte los documentos en formato PDF. Máximo 100 MB por archivo.</p>
+                <p className={styles.panelHint}><strong>Obligatorio.</strong> Adjunte los documentos en formato PDF. Máximo 50 MB por archivo.</p>
               )}
               <div className={styles.panelBody}>
                 <div
@@ -224,7 +224,7 @@ export default function PaginaSubida() {
                 >
                   <div className={styles.dropIconWrap}><IconoSubir tamano={22} /></div>
                   <p className={styles.dropTitle}>Arrastra archivos aquí o <strong>haz clic</strong></p>
-                  <p className={styles.dropHint}>{modoBasico ? "Solo PDF · Máx. 100 MB por archivo" : "Máx. 100 MB por archivo"}</p>
+                  <p className={styles.dropHint}>{modoBasico ? "Solo PDF · Máx. 50 MB por archivo" : "Máx. 50 MB por archivo"}</p>
                   <input
                     ref={inputRef}
                     type="file"

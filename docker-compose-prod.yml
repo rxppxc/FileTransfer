@@ -47,13 +47,14 @@ services:
       - LDAP_TIMEOUT=10
       - LDAP_ALLOWED_OU=
       - STORAGE_PATH=/app/storage/transfers
-      - MAX_FILE_SIZE_MB=100
+      - MAX_FILE_SIZE_MB=50
       - TRANSFER_EXPIRY_DAYS=7
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_PORT=25
       - MAIL_FROM=${MAIL_FROM}
       - MAIL_FROM_NAME=FileTransfer - SNM
       - LIMPIEZA_INTERVALO_HORAS=6
+      - LIMPIEZA_RETENER_DIAS=0
       - FRONTEND_URL=${APP_URL}
       - APP_URL=${APP_URL}
       - RATE_LIMIT_DOWNLOADS_PER_MINUTE=30

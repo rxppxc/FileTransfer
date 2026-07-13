@@ -81,7 +81,6 @@ function TransferCard({
               )}
             </div>
             <div className={styles.badges}>
-              {t.status === "draft"     && <span className={styles.badgeDraft}>Borrador</span>}
               {t.status === "active"    && <span className={styles.badgeActive}>Activo</span>}
               {t.status === "returned"  && <span className={styles.badgeReturned}>Requiere corrección</span>}
               {t.status === "review"    && <span className={styles.badgeReview}>Devuelto por Muelle</span>}
@@ -128,7 +127,9 @@ function TransferCard({
             {modo === "naviera" && (
               <>
                 {t.status === "draft" && (
-                  <span className={styles.muted}>Pendiente de procesamiento por Sector Pacífico…</span>
+                  <Link to={`/t/${t.token}`} className={styles.btnView}>
+                    <IconoOjo />Ver
+                  </Link>
                 )}
                 {t.status === "returned" && (
                   <Link to={`/transfers/${t.id}/corregir`} className={styles.btnCorregir}>

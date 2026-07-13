@@ -23,7 +23,7 @@ class Configuracion(BaseSettings):
     LDAP_ALLOWED_OU:    str = ""   # ej: "OU=DTI,DC=migracion,DC=gob,DC=pa"
 
     STORAGE_PATH:         str = "./storage/transfers"
-    MAX_FILE_SIZE_MB:     int = 100
+    MAX_FILE_SIZE_MB:     int = 50
     TRANSFER_EXPIRY_DAYS: int = 7
 
     FRONTEND_URL: str = "http://localhost:5173"
@@ -39,7 +39,7 @@ class Configuracion(BaseSettings):
 
     # Limpieza automática de transferencias expiradas
     LIMPIEZA_INTERVALO_HORAS: int = 6   # cada cuántas horas corre el proceso
-    LIMPIEZA_RETENER_DIAS:    int = 7   # días de gracia tras la expiración antes de borrar
+    LIMPIEZA_RETENER_DIAS:    int = 0   # días de gracia tras la expiración antes de borrar
 
     # Rate limit del endpoint público de descarga (peticiones por IP por minuto). 0 = desactivado.
     RATE_LIMIT_DOWNLOADS_PER_MINUTE: int = 30
