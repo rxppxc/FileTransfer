@@ -44,6 +44,12 @@ class Configuracion(BaseSettings):
     # Rate limit del endpoint público de descarga (peticiones por IP por minuto). 0 = desactivado.
     RATE_LIMIT_DOWNLOADS_PER_MINUTE: int = 30
 
+    # Login local de prueba (sin AD) — interruptor independiente de APP_ENV,
+    # porque docker-compose-prod.yml fija APP_ENV=production también en el
+    # servidor de pruebas. Debe quedar en False (o sin definir) antes de que
+    # el sistema pase a producción real.
+    PERMITIR_LOGIN_LOCAL: bool = False
+
     @property
     def app_base_url(self) -> str:
         return self.APP_URL or self.FRONTEND_URL

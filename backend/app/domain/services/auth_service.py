@@ -18,11 +18,11 @@ class ServicioAutenticacion:
         self.repo_usuario = repo_usuario
 
     async def login(self, nombre_usuario: str, contrasena: str) -> RespuestaToken:
-        # Atajo SOLO fuera de producción: usuarios locales de prueba (creados
-        # desde /admin/usuarios/local) se autentican por contraseña propia,
-        # sin pasar por LDAP. Se elimina junto con ese endpoint y el campo
-        # password_hash antes de pasar el sistema a producción.
-        if not configuracion.es_produccion:
+        # Atajo SOLO si PERMITIR_LOGIN_LOCAL=true: usuarios locales de prueba
+        # (creados desde /admin/usuarios/local) se autentican por contraseña
+        # propia, sin pasar por LDAP. Se elimina junto con ese endpoint, el
+        # campo password_hash y esta variable antes de pasar a producción.
+        if configuracion.PERMITIR_LOGIN_LOCAL:
             usuario_local = await self.repo_usuario.buscar_por_nombre_usuario(nombre_usuario)
             if usuario_local and usuario_local.user_type == TipoUsuario.LOCAL:
                 if not usuario_local.password_hash or not verificar_password(contrasena, usuario_local.password_hash):

@@ -105,7 +105,7 @@ async def crear_usuario_local(
     _: int = Depends(requerir_admin),
     sesion: AsyncSession = Depends(obtener_sesion_bd),
 ):
-    if configuracion.es_produccion:
+    if not configuracion.PERMITIR_LOGIN_LOCAL:
         raise HTTPException(status_code=403, detail="No disponible en producción.")
 
     repo = RepositorioUsuario(sesion)

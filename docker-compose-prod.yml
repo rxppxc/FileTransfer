@@ -57,6 +57,8 @@ services:
       - FRONTEND_URL=${APP_URL}
       - APP_URL=${APP_URL}
       - RATE_LIMIT_DOWNLOADS_PER_MINUTE=30
+      # Temporal (fase de pruebas) — quitar esta línea antes de producción real.
+      - PERMITIR_LOGIN_LOCAL=${PERMITIR_LOGIN_LOCAL:-false}
     volumes:
       - filetransfer_storage:/app/storage/transfers
     depends_on:
