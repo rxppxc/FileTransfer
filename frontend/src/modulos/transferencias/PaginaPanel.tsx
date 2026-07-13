@@ -307,6 +307,7 @@ export default function PaginaPanel() {
   const [error,            setError]            = useState<string | null>(null);
   const [mostrarExpiradas, setMostrarExpiradas] = useState(false);
   const [colaAbierta,      setColaAbierta]      = useState(true);
+  const [procesadasAbierta, setProcesadasAbierta] = useState(true);
   const [expandidos,       setExpandidos]       = useState<Set<string>>(new Set());
   const [puertoAbiertos,   setPuertoAbiertos]   = useState<Set<string>>(new Set());
   const [navieraAbiertos,  setNavieraAbiertos]  = useState<Set<string>>(new Set());
@@ -327,16 +328,24 @@ export default function PaginaPanel() {
         .then(setTransferencias)
         .catch(() => setError("No se pudieron cargar las transferencias."))
         .finally(() => setCargando(false));
+    } else if (vistaColaSP) {
+      // SP sin admin ni jerarquía: además de su cola de revisión (bloque
+      // superior), ve todas las transferencias activas — así las que ya
+      // procesó (o procesó cualquier otro SP) no desaparecen sin dejar rastro,
+      // quedan agrupadas más abajo en "Procesadas".
+      apiTransferencias.listarTodasActivas()
+        .then(setTransferencias)
+        .catch(() => setError("No se pudieron cargar las transferencias."))
+        .finally(() => setCargando(false));
     } else {
-      // Naviera y SP (que no ven jerarquía) → lista simple de propias.
-      // SP verá su cola en el bloque superior; los usuarios naviera ven aquí las suyas.
+      // Naviera → lista simple de propias.
       apiTransferencias.listar()
         .then(setTransferencias)
         .catch(() => setError("No se pudieron cargar las transferencias."))
         .finally(() => setCargando(false));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vistaJerarquica, esAdmin]);
+  }, [vistaJerarquica, vistaColaSP, esAdmin]);
 
   // Cola de SP: borradores + devueltos por Muelle.
   useEffect(() => {
@@ -716,15 +725,37 @@ export default function PaginaPanel() {
               </div>
             )}
 
-            {/* ── Vista Naviera (o SP sin admin ni jerarquía) ── */}
-            {!vistaJerarquica && activas.length > 0 && (
+            {/* ── Vista Naviera: lista simple de sus propias transferencias ── */}
+            {!vistaJerarquica && esNavieraSola && activas.length > 0 && (
               <div className={styles.list}>
                 {activas.map(t => (
-                  <TransferCard
-                    key={t.token}
-                    {...cardBase(t, esNavieraSola ? modoNaviera : modoSP)}
-                  />
+                  <TransferCard key={t.token} {...cardBase(t, modoNaviera)} />
                 ))}
+              </div>
+            )}
+
+            {/* ── Vista Sector Pacífico (sin jerarquía): ya procesadas ── */}
+            {!vistaJerarquica && !esNavieraSola && activas.length > 0 && (
+              <div className={styles.colaSection}>
+                <button
+                  className={styles.colaToggle}
+                  onClick={() => setProcesadasAbierta(v => !v)}
+                >
+                  <div className={styles.colaIconWrap}><IconoProcesada tamano={18} /></div>
+                  <div className={styles.colaTextos}>
+                    <div className={styles.colaTitulo}>Procesadas</div>
+                    <div className={styles.colaSub}>Transferencias activas ya enviadas al destinatario</div>
+                  </div>
+                  <span className={styles.colaCount}>{activas.length}</span>
+                  <span className={`${styles.colaChevron} ${procesadasAbierta ? styles.colaChevronOpen : ""}`}>›</span>
+                </button>
+                {procesadasAbierta && (
+                  <div className={styles.colaList}>
+                    {activas.map(t => (
+                      <TransferCard key={t.token} {...cardBase(t, modoSP)} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
