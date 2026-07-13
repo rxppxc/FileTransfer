@@ -58,7 +58,6 @@ class Configuracion(BaseSettings):
     def es_produccion(self) -> bool:
         return self.APP_ENV.lower() == "production"
 
-
 @lru_cache
 def obtener_configuracion() -> Configuracion:
     return Configuracion()
