@@ -441,8 +441,8 @@
   gap: 14px;
   padding: 14px 20px;
   margin-bottom: 12px;
-  background: rgba(59,130,246,.08);
-  border: 1px solid rgba(59,130,246,.22);
+  background: rgba(59,130,246,.16);
+  border: 1px solid rgba(59,130,246,.38);
   border-left: 5px solid #3B82F6;
   border-radius: var(--r-md);
   cursor: pointer;
@@ -450,13 +450,13 @@
   transition: background var(--t), box-shadow var(--t);
 }
 .puertoHeader:hover {
-  background: rgba(59,130,246,.14);
-  box-shadow: 0 4px 20px rgba(59,130,246,0.14);
+  background: rgba(59,130,246,.24);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.20);
 }
 .puertoIconWrap {
   width: 36px; height: 36px;
-  background: rgba(59,130,246,.16);
-  border: 1px solid rgba(59,130,246,.30);
+  background: rgba(59,130,246,.22);
+  border: 1px solid rgba(59,130,246,.42);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
   color: var(--acc-blue);
@@ -482,9 +482,9 @@
   text-overflow: ellipsis;
 }
 .puertoCount {
-  background: rgba(59,130,246,.16);
+  background: rgba(59,130,246,.22);
   color: var(--acc-blue);
-  border: 1px solid rgba(59,130,246,.30);
+  border: 1px solid rgba(59,130,246,.42);
   font-size: .72rem;
   font-weight: 800;
   padding: 3px 10px;
@@ -503,26 +503,26 @@
   gap: 12px;
   padding: 10px 16px;
   margin-bottom: 8px;
-  background: rgba(13,148,136,.08);
-  border: 1px solid rgba(13,148,136,.22);
-  border-left: 3px solid #0D9488;
+  background: rgba(192,132,252,.15);
+  border: 1px solid rgba(192,132,252,.36);
+  border-left: 3px solid #C084FC;
   border-radius: var(--r-sm);
   cursor: pointer;
   user-select: none;
   transition: background var(--t);
 }
 .navieraHeader:hover {
-  background: rgba(13,148,136,.15);
+  background: rgba(192,132,252,.24);
 }
 .navieraInitials {
   width: 34px; height: 34px;
-  background: rgba(13,148,136,.16);
-  border: 1.5px solid rgba(13,148,136,.30);
+  background: rgba(192,132,252,.22);
+  border: 1.5px solid rgba(192,132,252,.42);
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
   font-size: .80rem;
   font-weight: 800;
-  color: var(--acc-teal);
+  color: var(--acc-purple);
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -532,22 +532,22 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--acc-teal);
+  color: var(--acc-purple);
   line-height: 1;
   margin-bottom: 2px;
 }
 .navieraNombre {
   font-size: .88rem;
   font-weight: 700;
-  color: var(--acc-teal);
+  color: var(--acc-purple);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .navieraCount {
-  background: rgba(13,148,136,.16);
-  color: var(--acc-teal);
-  border: 1px solid rgba(13,148,136,.30);
+  background: rgba(192,132,252,.22);
+  color: var(--acc-purple);
+  border: 1px solid rgba(192,132,252,.42);
   font-size: .70rem;
   font-weight: 700;
   padding: 2px 8px;
@@ -566,27 +566,26 @@
   gap: 10px;
   padding: 8px 14px;
   margin-bottom: 6px;
-  background: var(--overlay);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--acc-gray);
+  background: rgba(34,211,238,.11);
+  border: 1px solid rgba(34,211,238,.28);
+  border-left: 2px solid #22D3EE;
   border-radius: var(--r-sm);
   cursor: pointer;
   user-select: none;
   transition: background var(--t), border-color var(--t);
 }
 .marinoHeader:hover {
-  background: var(--overlay-2);
-  border-left-color: var(--acc-gray);
+  background: rgba(34,211,238,.18);
 }
 .marinoAvatar {
   width: 30px; height: 30px;
-  background: var(--overlay-2);
-  border: 1px solid var(--border-2);
+  background: rgba(34,211,238,.18);
+  border: 1px solid rgba(34,211,238,.36);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: .76rem;
   font-weight: 800;
-  color: var(--text);
+  color: var(--acc-cyan);
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -596,7 +595,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .9px;
-  color: var(--muted);
+  color: var(--acc-cyan);
   line-height: 1;
   margin-bottom: 2px;
 }
@@ -609,9 +608,9 @@
   text-overflow: ellipsis;
 }
 .marinoCount {
-  background: var(--overlay-2);
-  color: var(--text-2);
-  border: 1px solid var(--border-2);
+  background: rgba(34,211,238,.18);
+  color: var(--acc-cyan);
+  border: 1px solid rgba(34,211,238,.36);
   font-size: .68rem;
   font-weight: 700;
   padding: 2px 7px;

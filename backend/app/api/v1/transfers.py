@@ -454,7 +454,9 @@ async def previsualizar_archivo(
 
 
 @enrutador.get("/public/{token}", response_model=RespuestaTransferenciaPublica)
+@limiter.limit(limite_descarga)
 async def obtener_transferencia_publica(
+    request: Request,
     token: str,
     svc: ServicioTransferencia = Depends(_obtener_servicio),
 ):

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAutenticacion } from "./hooks/useAutenticacion";
 import { usePermisos } from "./hooks/usePermisos";
@@ -13,16 +13,35 @@ import PaginaSubida               from "./modulos/transferencias/PaginaSubida";
 import PaginaTransferencia        from "./modulos/transferencias/PaginaTransferencia";
 import PaginaEditarTransferencia  from "./modulos/transferencias/PaginaEditarTransferencia";
 import PaginaCorreccion           from "./modulos/transferencias/PaginaCorreccion";
-import PaginaUsuarios             from "./modulos/administracion/PaginaUsuarios";
-import PaginaRoles                from "./modulos/administracion/PaginaRoles";
-import PaginaEstadisticas         from "./modulos/administracion/PaginaEstadisticas";
-import PaginaPuertosNavieras      from "./modulos/administracion/PaginaPuertosNavieras";
 import {
   AVISO_INACTIVIDAD_MS as AVISO_MS,
   LOGOUT_INACTIVIDAD_MS as LOGOUT_MS,
   CUENTA_REGRESIVA_SEG as CUENTA_SEG,
 } from "./constants/sesion";
 import "./styles/globals.css";
+
+// Solo admin visita estas — se cargan en un chunk aparte para no pesarle
+// el bundle inicial a Naviera/Sector Pacífico/Muelle, que nunca las ven.
+const PaginaUsuarios        = lazy(() => import("./modulos/administracion/PaginaUsuarios"));
+const PaginaRoles           = lazy(() => import("./modulos/administracion/PaginaRoles"));
+const PaginaEstadisticas    = lazy(() => import("./modulos/administracion/PaginaEstadisticas"));
+const PaginaPuertosNavieras = lazy(() => import("./modulos/administracion/PaginaPuertosNavieras"));
+
+function CargandoRuta() {
+  return (
+    <div style={{
+      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
+      background: "var(--ink)",
+    }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: "50%",
+        border: "3px solid rgba(245,200,0,.25)", borderTopColor: "var(--y)",
+        animation: "girar .7s linear infinite",
+      }} />
+      <style>{"@keyframes girar { to { transform: rotate(360deg); } }"}</style>
+    </div>
+  );
+}
 
 function RutaPrivada({ children }: { children: React.ReactNode }) {
   const { estaAutenticado } = useAutenticacion();
@@ -146,10 +165,10 @@ export default function App() {
               <Route path="/new"        element={<RutaPrivada><PaginaSubida /></RutaPrivada>} />
               <Route path="/transfers/:id/procesar" element={<RutaPrivada><PaginaEditarTransferencia /></RutaPrivada>} />
               <Route path="/transfers/:id/corregir" element={<RutaPrivada><PaginaCorreccion /></RutaPrivada>} />
-              <Route path="/admin"        element={<RutaAdmin><PaginaUsuarios /></RutaAdmin>} />
-              <Route path="/admin/roles"  element={<RutaAdmin><PaginaRoles /></RutaAdmin>} />
-              <Route path="/admin/puertos-navieras" element={<RutaAdmin><PaginaPuertosNavieras /></RutaAdmin>} />
-              <Route path="/admin/stats"  element={<RutaStats><PaginaEstadisticas /></RutaStats>} />
+              <Route path="/admin"        element={<RutaAdmin><Suspense fallback={<CargandoRuta />}><PaginaUsuarios /></Suspense></RutaAdmin>} />
+              <Route path="/admin/roles"  element={<RutaAdmin><Suspense fallback={<CargandoRuta />}><PaginaRoles /></Suspense></RutaAdmin>} />
+              <Route path="/admin/puertos-navieras" element={<RutaAdmin><Suspense fallback={<CargandoRuta />}><PaginaPuertosNavieras /></Suspense></RutaAdmin>} />
+              <Route path="/admin/stats"  element={<RutaStats><Suspense fallback={<CargandoRuta />}><PaginaEstadisticas /></Suspense></RutaStats>} />
               <Route path="*"           element={<Navigate to="/dashboard" replace />} />
               </Routes>
               </GestorSesion>

@@ -44,7 +44,7 @@ const IconChevron = ({ open }: { open: boolean }) => (
 
 function TransferCard({
   t, modo, copiado, eliminando, copiarEnlace, eliminarTransferencia,
-  expanded, onToggle, marcarProcesada, devolverAlSP,
+  expanded, onToggle, marcarProcesada, devolverAlSP, usuarioActualId,
 }: {
   t: Transferencia;
   modo: Modo;
@@ -56,9 +56,11 @@ function TransferCard({
   onToggle: () => void;
   marcarProcesada: (id: number) => void;
   devolverAlSP: (id: number, titulo: string | null) => void;
+  usuarioActualId: number | undefined;
 }) {
   const esSP     = modo === "sp";
   const esMuelle = modo === "muelle";
+  const esPropia = t.user_id === usuarioActualId;
 
   return (
     <div className={`${styles.card} ${expanded ? styles.cardOpen : ""}`}>
@@ -213,13 +215,14 @@ function TransferCard({
               </>
             )}
 
-            {/* Eliminar: solo el dueño (Naviera) o Sector Pacífico admin, NO Muelle */}
-            {!esMuelle && (
+            {/* Eliminar: solo el dueño real de la transferencia (el backend lo exige), nunca Muelle */}
+            {!esMuelle && esPropia && (
               <button
                 className={styles.btnDelete}
                 onClick={() => eliminarTransferencia(t.token)}
                 disabled={eliminando.has(t.token)}
                 title="Eliminar"
+                aria-label={`Eliminar ${t.title || "transferencia sin título"}`}
               >
                 <IconoBasura tamano={15} />
               </button>
@@ -485,6 +488,7 @@ export default function PaginaPanel() {
       onToggle: () => toggleCard(t.token),
       marcarProcesada: marcarProcesadaMuelle,
       devolverAlSP: (id: number, titulo: string | null) => setModalDevolverId({ id, titulo }),
+      usuarioActualId: usuario?.id,
     };
   }
 
@@ -800,14 +804,17 @@ export default function PaginaPanel() {
                             <Link to={`/t/${t.token}`} className={styles.btnView}>
                               <IconoOjo />Ver
                             </Link>
-                            <button
-                              className={styles.btnDelete}
-                              onClick={() => eliminarTransferencia(t.token)}
-                              disabled={eliminando.has(t.token)}
-                              title="Eliminar"
-                            >
-                              <IconoBasura tamano={15} />
-                            </button>
+                            {t.user_id === usuario?.id && (
+                              <button
+                                className={styles.btnDelete}
+                                onClick={() => eliminarTransferencia(t.token)}
+                                disabled={eliminando.has(t.token)}
+                                title="Eliminar"
+                                aria-label={`Eliminar ${t.title || "transferencia sin título"}`}
+                              >
+                                <IconoBasura tamano={15} />
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>

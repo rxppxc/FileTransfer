@@ -4,6 +4,7 @@ import { apiTransferencias } from "../../api/transfers";
 import type { Transferencia } from "../../types";
 import { formatBytes } from "../../utils/format";
 import { useConfirmar } from "../../components/ModalConfirmacion";
+import { useNotificacion } from "../../components/Notificaciones";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import {
@@ -52,11 +53,10 @@ export default function PaginaEditarTransferencia() {
   const [subiendo, setSubiendo] = useState(false);
   const inputArchivos = useRef<HTMLInputElement>(null);
 
-  // Aviso flotante
-  const [aviso, setAviso] = useState<{ texto: string; tipo: "ok" | "err" } | null>(null);
+  // Aviso flotante — delega en el sistema de toasts compartido de la app.
+  const { mostrar: mostrarToast } = useNotificacion();
   function notificar(texto: string, tipo: "ok" | "err" = "ok") {
-    setAviso({ texto, tipo });
-    setTimeout(() => setAviso(null), 3000);
+    mostrarToast(texto, tipo === "err" ? "error" : "exito");
   }
 
   const aplicarTransferencia = useCallback((tr: Transferencia) => {
@@ -270,12 +270,6 @@ export default function PaginaEditarTransferencia() {
           <div className={styles.headerRight}><MenuCabecera /></div>
         </div>
       </header>
-
-      {aviso && (
-        <div className={`${styles.toast} ${aviso.tipo === "err" ? styles.toastErr : styles.toastOk}`}>
-          {aviso.texto}
-        </div>
-      )}
 
       <main className={styles.main}>
         <div className={styles.titulo}>
@@ -499,6 +493,7 @@ export default function PaginaEditarTransferencia() {
                             onClick={() => quitarArchivo(f.id)}
                             disabled={eliminandoArchivo === f.id}
                             title="Eliminar archivo"
+                            aria-label={`Eliminar ${f.original_name}`}
                           >
                             {eliminandoArchivo === f.id ? <span className={styles.spinnerSm} /> : <IconoBasura />}
                           </button>
@@ -519,6 +514,7 @@ export default function PaginaEditarTransferencia() {
                             onClick={() => quitarArchivo(f.id)}
                             disabled={eliminandoArchivo === f.id}
                             title="Eliminar archivo"
+                            aria-label={`Eliminar ${f.original_name}`}
                           >
                             {eliminandoArchivo === f.id ? <span className={styles.spinnerSm} /> : <IconoBasura />}
                           </button>

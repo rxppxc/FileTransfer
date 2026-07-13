@@ -4,18 +4,15 @@ import { apiTransferencias } from "../../api/transfers";
 import type { Transferencia } from "../../types";
 import { formatBytes } from "../../utils/format";
 import { useConfirmar } from "../../components/ModalConfirmacion";
+import { useNotificacion } from "../../components/Notificaciones";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import { IconoArchivo, IconoBasura, IconoSubir, IconoEnviar } from "../../components/Iconos";
 import styles from "./PaginaCorreccion.module.css";
 
 const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-  ".odt", ".ods", ".odp", ".txt", ".rtf", ".csv",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp", ".tiff",
-  ".mp3", ".wav", ".mp4", ".mov", ".avi", ".mkv", ".webm",
-  ".zip", ".rar", ".7z", ".tar", ".gz",
-  ".xml", ".json", ".md",
+  ".pdf", ".doc", ".xls",
+  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
 ].join(",");
 
 export default function PaginaCorreccion() {
@@ -33,10 +30,9 @@ export default function PaginaCorreccion() {
   const [enviando, setEnviando] = useState(false);
   const inputArchivos = useRef<HTMLInputElement>(null);
 
-  const [aviso, setAviso] = useState<{ texto: string; tipo: "ok" | "err" } | null>(null);
+  const { mostrar: mostrarToast } = useNotificacion();
   function notificar(texto: string, tipo: "ok" | "err" = "ok") {
-    setAviso({ texto, tipo });
-    setTimeout(() => setAviso(null), 3500);
+    mostrarToast(texto, tipo === "err" ? "error" : "exito");
   }
 
   const cargar = useCallback(async () => {
@@ -164,11 +160,6 @@ export default function PaginaCorreccion() {
         </div>
       </header>
 
-      {aviso && (
-        <div className={`${styles.toast} ${aviso.tipo === "err" ? styles.toastErr : styles.toastOk}`}>
-          {aviso.texto}
-        </div>
-      )}
 
       <main className={styles.main}>
         <div className={styles.titulo}>
@@ -205,6 +196,7 @@ export default function PaginaCorreccion() {
                       onClick={() => quitarArchivo(f.id)}
                       disabled={eliminandoArchivo === f.id}
                       title="Eliminar archivo"
+                      aria-label={`Eliminar ${f.original_name}`}
                     >
                       {eliminandoArchivo === f.id ? <span className={styles.spinnerSm} /> : <IconoBasura />}
                     </button>

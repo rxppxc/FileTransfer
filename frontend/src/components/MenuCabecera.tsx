@@ -39,6 +39,8 @@ export function MenuCabecera() {
         <button
           className={`${styles.menuBtn} ${abierto ? styles.menuBtnOpen : ""}`}
           onClick={() => setAbierto(v => !v)}
+          aria-haspopup="menu"
+          aria-expanded={abierto}
         >
           Menú
           <span className={`${styles.chevron} ${abierto ? styles.chevronOpen : ""}`}>

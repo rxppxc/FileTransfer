@@ -17,6 +17,7 @@
  *   />
  */
 import { useEffect, useState } from "react";
+import { useAtraparFoco } from "../hooks/useAtraparFoco";
 import styles from "./ModalConfirmacion.module.css";
 
 interface Props {
@@ -58,6 +59,8 @@ export function ModalDevolucion({
     return () => window.removeEventListener("keydown", onKey);
   }, [abierto, onCancelar]);
 
+  const refModal = useAtraparFoco(abierto);
+
   if (!abierto) return null;
 
   async function confirmar() {
@@ -74,12 +77,14 @@ export function ModalDevolucion({
   return (
     <div className={styles.overlay} onClick={onCancelar}>
       <div
+        ref={refModal}
         className={styles.modal}
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        aria-labelledby="devolucion-titulo"
       >
-        <h3 className={styles.titulo}>{titulo}</h3>
+        <h3 id="devolucion-titulo" className={styles.titulo}>{titulo}</h3>
         {descripcion && <p className={styles.mensaje}>{descripcion}</p>}
         <textarea
           className={styles.mensaje}
@@ -99,7 +104,7 @@ export function ModalDevolucion({
           placeholder={placeholder}
           value={motivo}
           onChange={e => setMotivo(e.target.value)}
-          autoFocus
+          data-focus-inicial
           maxLength={1000}
         />
         <div className={styles.acciones}>

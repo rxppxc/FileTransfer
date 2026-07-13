@@ -85,6 +85,7 @@ function EntityPanel({
                     className={styles.btnElimCarpeta}
                     onClick={() => setConfirmId(item.id)}
                     title="Eliminar"
+                    aria-label={`Eliminar ${item.nombre}`}
                   >
                     <IconoBasura />
                   </button>

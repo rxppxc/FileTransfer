@@ -15,6 +15,7 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from "react";
 import type { ReactNode } from "react";
+import { useAtraparFoco } from "../hooks/useAtraparFoco";
 import styles from "./ModalConfirmacion.module.css";
 
 interface OpcionesConfirmacion {
@@ -61,15 +62,24 @@ export function ProveedorConfirmacion({ children }: { children: ReactNode }) {
   }, [estado, responder]);
 
   const valor = useMemo(() => confirmar, [confirmar]);
+  const refModal = useAtraparFoco(!!estado);
 
   return (
     <Contexto.Provider value={valor}>
       {children}
       {estado && (
         <div className={styles.overlay} onClick={() => responder(false)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
-            {estado.titulo && <h3 className={styles.titulo}>{estado.titulo}</h3>}
-            <div className={styles.mensaje}>{estado.mensaje}</div>
+          <div
+            ref={refModal}
+            className={styles.modal}
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={estado.titulo ? "confirmacion-titulo" : undefined}
+            aria-describedby="confirmacion-mensaje"
+          >
+            {estado.titulo && <h3 id="confirmacion-titulo" className={styles.titulo}>{estado.titulo}</h3>}
+            <div id="confirmacion-mensaje" className={styles.mensaje}>{estado.mensaje}</div>
             <div className={styles.acciones}>
               <button className={styles.btnCancelar} onClick={() => responder(false)}>
                 {estado.textoCancelar ?? "Cancelar"}
@@ -77,7 +87,7 @@ export function ProveedorConfirmacion({ children }: { children: ReactNode }) {
               <button
                 className={estado.peligroso ? styles.btnPeligro : styles.btnConfirmar}
                 onClick={() => responder(true)}
-                autoFocus
+                data-focus-inicial
               >
                 {estado.textoOk ?? "Confirmar"}
               </button>

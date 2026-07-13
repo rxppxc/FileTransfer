@@ -35,26 +35,6 @@
 .headerText .org { color: rgba(255,255,255,.85); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; }
 .headerText .app { color: var(--y); font-size: .96rem; font-weight: 800; letter-spacing: .8px; }
 
-/* ─── Toast ─── */
-.toast {
-  position: fixed;
-  top: 76px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  padding: 10px 18px;
-  border-radius: var(--r-sm);
-  font-size: .85rem;
-  font-weight: 600;
-  animation: fadeInDown .2s ease;
-}
-.toastOk { background: #0F2418; border: 1px solid #22C55E; border-left: 4px solid #22C55E; color: #86EFAC; }
-.toastErr { background: #1A1010; border: 1px solid #EF4444; border-left: 4px solid #EF4444; color: #FCA5A5; }
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
-}
-
 /* ─── Main ─── */
 .main {
   flex: 1;
