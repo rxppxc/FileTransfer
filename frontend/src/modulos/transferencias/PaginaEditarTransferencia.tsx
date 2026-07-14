@@ -14,8 +14,8 @@ import {
 import styles from "./PaginaEditarTransferencia.module.css";
 
 const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".xls",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
+  ".pdf", ".doc", ".docx", ".xls", ".xlsx",
+  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".heic", ".heif", ".avif",
 ].join(",");
 
 

@@ -43,29 +43,39 @@ TAMANO_CHUNK = 1024 * 1024  # 1 MB por fragmento
 _NOMBRE_INVALIDO = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 
 EXTENSIONES_PERMITIDAS = {
-    # Documentos de oficina — formatos legados a propósito (ver _verificar_sin_macros):
-    # .doc y .xls en vez de .docx/.xlsx. Decisión del dueño del sistema.
-    ".pdf", ".doc", ".xls",
+    # Documentos de oficina — tanto el formato legado (OLE2) como el moderno
+    # (OOXML). Ambos se escanean en busca de macros VBA antes de aceptarlos
+    # (ver _EXTENSIONES_CON_MACROS_POSIBLES / _verificar_sin_macros). No se
+    # permiten variantes "habilitadas para macros" (.docm/.xlsm): esas ya
+    # declaran en la extensión que pueden traer macros, no tiene sentido
+    # aceptarlas y luego rechazarlas casi siempre.
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx",
     # Imágenes (sin .svg: puede llevar <script> embebido — riesgo XSS)
     ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
+    ".heic", ".heif", ".avif",
 }
 
-# Extensiones que son contenedores OLE2 (Compound File Binary) y por lo tanto
-# pueden llevar macros VBA embebidas. Se escanean con oletools antes de aceptarlas.
-_EXTENSIONES_CON_MACROS_POSIBLES = {".doc", ".xls"}
+# Extensiones que pueden llevar macros VBA embebidas (contenedores OLE2 o
+# OOXML). Se escanean con oletools antes de aceptarlas.
+_EXTENSIONES_CON_MACROS_POSIBLES = {".doc", ".xls", ".docx", ".xlsx"}
 
 # MIME conocidos por extensión. Si python-magic está disponible se prefiere lo
 # que detecta del contenido. Si no, este mapa actúa de respaldo confiable.
 _MIME_POR_EXTENSION: dict[str, str] = {
     ".pdf": "application/pdf",
     ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".xls": "application/vnd.ms-excel",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
     ".png": "image/png",
     ".gif": "image/gif",
     ".bmp": "image/bmp",
     ".webp": "image/webp",
     ".tiff": "image/tiff",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+    ".avif": "image/avif",
 }
 
 

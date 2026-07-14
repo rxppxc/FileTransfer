@@ -15,8 +15,8 @@ import styles from "./PaginaSubida.module.css";
 const DIAS_EXPIRACION_DEFECTO = 7;
 
 const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".xls",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff",
+  ".pdf", ".doc", ".docx", ".xls", ".xlsx",
+  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".heic", ".heif", ".avif",
 ].join(",");
 
 const TIPOS_PDF      = ".pdf";
