@@ -10,6 +10,11 @@ export function useAutenticacion() {
 
   const iniciarSesion = useCallback(async (nombreUsuario: string, contrasena: string) => {
     const datos = await apiAutenticacion.iniciarSesion(nombreUsuario, contrasena);
+    // Si había un usuario distinto antes (login directo en /login sin pasar
+    // por "Cerrar sesión"), sus permisos cacheados quedarían viejos y
+    // usePermisos() los usaría por un instante hasta que llegue la respuesta
+    // real — causando llamadas a endpoints que este usuario no puede ver.
+    localStorage.removeItem("permisos");
     localStorage.setItem("access_token", datos.access_token);
     localStorage.setItem("user", JSON.stringify(datos.user));
     setUsuario(datos.user);
@@ -17,13 +22,21 @@ export function useAutenticacion() {
   }, []);
 
   const cerrarSesion = useCallback(async (reportar = true, expirada = false) => {
+    // Reportar ANTES de borrar el token: si no, la llamada sale sin
+    // Authorization y el backend la rechaza con 401 sin dejar registro de
+    // auditoría del cierre de sesión.
+    if (reportar) {
+      try {
+        if (expirada) await apiAutenticacion.notificarExpiracion();
+        else await apiAutenticacion.cerrarSesion();
+      } catch {
+        // Si el token ya no es válido o falla la red, igual cerramos localmente.
+      }
+    }
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
+    localStorage.removeItem("permisos");
     setUsuario(null);
-    if (reportar) {
-      if (expirada) await apiAutenticacion.notificarExpiracion();
-      else await apiAutenticacion.cerrarSesion();
-    }
   }, []);
 
   const extenderSesion = useCallback(async () => {
