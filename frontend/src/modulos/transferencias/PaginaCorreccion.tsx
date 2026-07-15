@@ -3,17 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { apiTransferencias } from "../../api/transfers";
 import type { Transferencia } from "../../types";
 import { formatBytes } from "../../utils/format";
+import { TIPOS_ACEPTADOS, validarArchivos } from "../../utils/archivos";
 import { useConfirmar } from "../../components/ModalConfirmacion";
 import { useNotificacion } from "../../components/Notificaciones";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import { IconoArchivo, IconoBasura, IconoSubir, IconoEnviar } from "../../components/Iconos";
 import styles from "./PaginaCorreccion.module.css";
-
-const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".heic", ".heif", ".avif",
-].join(",");
 
 export default function PaginaCorreccion() {
   const { id: idStr } = useParams<{ id: string }>();
@@ -77,6 +73,12 @@ export default function PaginaCorreccion() {
 
   async function subirArchivos(files: FileList | null) {
     if (!files || files.length === 0) return;
+    const errorValidacion = validarArchivos(Array.from(files));
+    if (errorValidacion) {
+      notificar(errorValidacion, "err");
+      if (inputArchivos.current) inputArchivos.current.value = "";
+      return;
+    }
     setSubiendo(true);
     try {
       const fd = new FormData();

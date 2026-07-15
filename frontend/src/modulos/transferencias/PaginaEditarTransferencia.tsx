@@ -3,20 +3,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { apiTransferencias } from "../../api/transfers";
 import type { Transferencia } from "../../types";
 import { formatBytes } from "../../utils/format";
+import { TIPOS_ACEPTADOS, validarArchivos } from "../../utils/archivos";
 import { useConfirmar } from "../../components/ModalConfirmacion";
 import { useNotificacion } from "../../components/Notificaciones";
+import { ModalPreview } from "../../components/ModalPreview";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import {
   IconoArchivo, IconoBasura, IconoSubir, IconoGuardar,
-  IconoEnviar, IconoDevolver, IconoCandado, IconoEstrella,
+  IconoEnviar, IconoDevolver, IconoCandado, IconoEstrella, IconoOjo,
 } from "../../components/Iconos";
 import styles from "./PaginaEditarTransferencia.module.css";
-
-const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".heic", ".heif", ".avif",
-].join(",");
 
 
 export default function PaginaEditarTransferencia() {
@@ -52,6 +49,10 @@ export default function PaginaEditarTransferencia() {
   const [eliminandoArchivo, setEliminandoArchivo] = useState<number | null>(null);
   const [subiendo, setSubiendo] = useState(false);
   const inputArchivos = useRef<HTMLInputElement>(null);
+
+  // Previsualización de archivos (evita descargar el ZIP para revisar).
+  const [archivoPreview, setArchivoPreview] =
+    useState<{ id: number; original_name: string; mime_type: string | null } | null>(null);
 
   // Aviso flotante — delega en el sistema de toasts compartido de la app.
   const { mostrar: mostrarToast } = useNotificacion();
@@ -199,6 +200,12 @@ export default function PaginaEditarTransferencia() {
 
   async function subirArchivos(files: FileList | null) {
     if (!files || files.length === 0) return;
+    const errorValidacion = validarArchivos(Array.from(files));
+    if (errorValidacion) {
+      notificar(errorValidacion, "err");
+      if (inputArchivos.current) inputArchivos.current.value = "";
+      return;
+    }
     setSubiendo(true);
     try {
       const fd = new FormData();
@@ -489,6 +496,14 @@ export default function PaginaEditarTransferencia() {
                           <span className={styles.fileName}>{f.original_name}</span>
                           <span className={styles.fileSize}>{formatBytes(f.size)}</span>
                           <button
+                            className={styles.btnPreview}
+                            onClick={() => setArchivoPreview(f)}
+                            title="Previsualizar archivo"
+                            aria-label={`Previsualizar ${f.original_name}`}
+                          >
+                            <IconoOjo tamano={16} />
+                          </button>
+                          <button
                             className={styles.btnQuitar}
                             onClick={() => quitarArchivo(f.id)}
                             disabled={eliminandoArchivo === f.id}
@@ -509,6 +524,14 @@ export default function PaginaEditarTransferencia() {
                           <IconoArchivo />
                           <span className={styles.fileName}>{f.original_name}</span>
                           <span className={styles.fileSize}>{formatBytes(f.size)}</span>
+                          <button
+                            className={styles.btnPreview}
+                            onClick={() => setArchivoPreview(f)}
+                            title="Previsualizar archivo"
+                            aria-label={`Previsualizar ${f.original_name}`}
+                          >
+                            <IconoOjo tamano={16} />
+                          </button>
                           <button
                             className={styles.btnQuitar}
                             onClick={() => quitarArchivo(f.id)}
@@ -551,6 +574,14 @@ export default function PaginaEditarTransferencia() {
       <footer className={styles.footer}>
         Servicio Nacional de Migración &copy; {new Date().getFullYear()} &mdash; Todos los derechos reservados
       </footer>
+
+      {archivoPreview && t && (
+        <ModalPreview
+          token={t.token}
+          archivo={archivoPreview}
+          onCerrar={() => setArchivoPreview(null)}
+        />
+      )}
     </div>
   );
 }

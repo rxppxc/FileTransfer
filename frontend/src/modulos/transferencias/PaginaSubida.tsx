@@ -3,6 +3,7 @@ import type * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { apiTransferencias } from "../../api/transfers";
 import { formatBytes } from "../../utils/format";
+import { TIPOS_ACEPTADOS, validarArchivos } from "../../utils/archivos";
 import { MenuCabecera } from "../../components/MenuCabecera";
 import { BotonVolver } from "../../components/BotonVolver";
 import { usePermisos } from "../../hooks/usePermisos";
@@ -14,13 +15,7 @@ import styles from "./PaginaSubida.module.css";
 
 const DIAS_EXPIRACION_DEFECTO = 7;
 
-const TIPOS_ACEPTADOS = [
-  ".pdf", ".doc", ".docx", ".xls", ".xlsx",
-  ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".heic", ".heif", ".avif",
-].join(",");
-
-const TIPOS_PDF      = ".pdf";
-const MAX_BYTES      = 50 * 1024 * 1024; // 50 MB
+const TIPOS_PDF = ".pdf";
 
 
 export default function PaginaSubida() {
@@ -56,17 +51,12 @@ export default function PaginaSubida() {
     if (!lista) return;
     const nuevos = Array.from(lista);
 
-    if (modoBasico) {
-      const noSonPdf = nuevos.filter(a => !a.name.toLowerCase().endsWith(".pdf"));
-      if (noSonPdf.length) {
-        setError(`Solo se permiten archivos PDF. Los siguientes archivos no son válidos: ${noSonPdf.map(a => a.name).join(", ")}`);
-        return;
-      }
-      const superanTamanio = nuevos.filter(a => a.size > MAX_BYTES);
-      if (superanTamanio.length) {
-        setError(`Los siguientes archivos superan el límite de 50 MB: ${superanTamanio.map(a => a.name).join(", ")}`);
-        return;
-      }
+    // Se valida en ambos modos: el atributo `accept` del input no cubre el
+    // arrastrar-y-soltar, y el tamaño nunca lo filtra el navegador.
+    const errorValidacion = validarArchivos(nuevos, { soloPdf: modoBasico });
+    if (errorValidacion) {
+      setError(errorValidacion);
+      return;
     }
 
     setError(null);

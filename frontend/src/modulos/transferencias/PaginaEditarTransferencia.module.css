@@ -319,6 +319,21 @@
 .btnQuitar:hover:not(:disabled) { background: rgba(239,68,68,.22); border-color: rgba(239,68,68,.55); }
 .btnQuitar:disabled { opacity: .55; cursor: not-allowed; }
 
+.btnPreview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: rgba(59,130,246,.12);
+  border: 1.5px solid rgba(59,130,246,.35);
+  border-radius: var(--r-sm);
+  color: var(--acc-blue);
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t);
+}
+.btnPreview:hover { background: rgba(59,130,246,.24); border-color: rgba(59,130,246,.60); }
+
 .uploadZone {
   margin-top: 16px;
   display: flex;

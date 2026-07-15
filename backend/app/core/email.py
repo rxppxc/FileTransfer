@@ -1,4 +1,5 @@
 import base64
+import html
 import logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -10,6 +11,24 @@ from app.core.config import obtener_configuracion
 
 logger        = logging.getLogger(__name__)
 configuracion = obtener_configuracion()
+
+
+def _esc(texto: str) -> str:
+    """Escapa contenido controlado por el usuario antes de interpolarlo en las
+    plantillas HTML. Sin esto, un título/mensaje/motivo con etiquetas HTML se
+    renderizaría dentro de un correo oficial del SNM (inyección de HTML)."""
+    return html.escape(texto, quote=True)
+
+
+def _esc_multilinea(texto: str) -> str:
+    """Igual que _esc pero conserva los saltos de línea como <br>."""
+    return _esc(texto).replace("\r\n", "\n").replace("\n", "<br>")
+
+
+def _sanear_subject(texto: str) -> str:
+    """Elimina CR/LF de valores que van en cabeceras del correo (evita
+    inyección de cabeceras vía título con saltos de línea)."""
+    return texto.replace("\r", " ").replace("\n", " ").strip()
 
 _LOGO_PATH = Path(__file__).parent.parent.parent / "frontend" / "public" / "images" / "logo-snm.png"
 _LOGO_B64: str = ""
@@ -26,8 +45,8 @@ def _logo_src() -> str:
 def _construir_html(nombre_remitente: str, titulo: str | None, mensaje: str | None,
                     url_descarga: str, cantidad_archivos: int, fecha_expiracion: str) -> str:
 
-    titulo_texto  = titulo or "Transferencia de archivos"
-    primer_nombre = nombre_remitente.split()[0] if nombre_remitente else "Alguien"
+    titulo_texto  = _esc(titulo or "Transferencia de archivos")
+    primer_nombre = _esc(nombre_remitente.split()[0] if nombre_remitente else "Alguien")
 
     bloque_mensaje = ""
     if mensaje:
@@ -37,7 +56,7 @@ def _construir_html(nombre_remitente: str, titulo: str | None, mensaje: str | No
         <div style="background:#F4F4F4;border-left:4px solid #F5C800;
                     padding:16px 20px;font-size:14px;color:#444444;
                     line-height:1.8;font-style:italic;border-radius:0 4px 4px 0;">
-          &#8220;{mensaje}&#8221;
+          &#8220;{_esc_multilinea(mensaje)}&#8221;
         </div>
       </td>
     </tr>"""
@@ -153,8 +172,9 @@ def _construir_html_devolucion(
     - Bloque destacado con el motivo.
     - Botón conduce al panel de corrección, no de descarga.
     """
-    primer_nombre = nombre_naviera.split()[0] if nombre_naviera else "Usuario"
-    titulo_texto  = titulo or "una transferencia enviada"
+    primer_nombre = _esc(nombre_naviera.split()[0] if nombre_naviera else "Usuario")
+    titulo_texto  = _esc(titulo or "una transferencia enviada")
+    quien_devolvio = _esc(quien_devolvio)
 
     bloque_boton = ""
     if url_correccion:
@@ -232,7 +252,7 @@ def _construir_html_devolucion(
         <div style="background:#FEF2F2;border-left:4px solid #DC2626;
                     padding:16px 20px;font-size:14px;color:#333333;
                     line-height:1.7;border-radius:0 4px 4px 0;">
-          {motivo}
+          {_esc_multilinea(motivo)}
         </div>
       </td>
     </tr>
@@ -281,7 +301,7 @@ async def enviar_notificacion_devolucion(
         logger.warning("Sin email de destinatario — se omite el correo de devolución.")
         return
 
-    titulo_subject = titulo_transferencia or "Transferencia devuelta"
+    titulo_subject = _sanear_subject(titulo_transferencia or "Transferencia devuelta")
 
     raiz = MIMEMultipart("alternative")
     raiz["Subject"] = f"[SNM FileTransfer] Correcciones requeridas — {titulo_subject}"
@@ -326,10 +346,10 @@ async def enviar_notificacion_transferencia(
         return
 
     url_descarga   = f"{configuracion.app_base_url}/t/{token}"
-    titulo_subject = title or "Transferencia de archivos"
+    titulo_subject = _sanear_subject(title or "Transferencia de archivos")
 
     raiz = MIMEMultipart("alternative")
-    raiz["Subject"] = f"[SNM FileTransfer] {titulo_subject} — de {sender_name}"
+    raiz["Subject"] = f"[SNM FileTransfer] {titulo_subject} — de {_sanear_subject(sender_name)}"
     raiz["From"]    = f"{configuracion.MAIL_FROM_NAME} <{configuracion.MAIL_FROM}>"
     raiz["To"]      = recipient_email
 

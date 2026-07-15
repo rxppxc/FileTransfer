@@ -59,6 +59,13 @@ class ServicioLDAP:
             raise
 
     def autenticar(self, dn: str, contrasena: str) -> bool:
+        # Defensa explícita contra el "unauthenticated bind" de LDAP: un bind
+        # con usuario y contraseña vacía puede resolverse como bind anónimo
+        # exitoso en algunos servidores, lo que sería un bypass de login.
+        # ldap3 ya lanza LDAPPasswordIsMandatoryError, pero no dependemos de eso.
+        if not contrasena or not contrasena.strip():
+            logger.warning("[LDAP] Intento de autenticación con contraseña vacía — rechazado.")
+            return False
         try:
             conexion = Connection(
                 self.servidor,
